@@ -161,7 +161,7 @@ function LiveVoiceAnalyzer() {
       audioChunksRef.current = []
       
       // Проверяем поддерживаемые форматы
-      let mimeType = 'audio/webm;codecs=opus'
+      let mimeType = 'audio/wav'
       if (!MediaRecorder.isTypeSupported(mimeType)) {
         mimeType = 'audio/webm'
         if (!MediaRecorder.isTypeSupported(mimeType)) {
