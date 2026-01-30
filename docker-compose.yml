@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  edinorok:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: edinorok-app
+    ports:
+      - "8086:8086"  # Backend API
+      - "5173:5173"  # Frontend
+    environment:
+      # Database
+      - DATABASE_URL=postgresql://edinorok_user:password@db:5432/edinorok
+      
+      # OpenAI (опционально)
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_PROXY_HOST=${OPENAI_PROXY_HOST:-}
+      - OPENAI_PROXY_PORT=${OPENAI_PROXY_PORT:-0}
+      - OPENAI_PROXY_USERNAME=${OPENAI_PROXY_USERNAME:-}
+      - OPENAI_PROXY_PASSWORD=${OPENAI_PROXY_PASSWORD:-}
+      - OPENAI_PROXY_TYPE=${OPENAI_PROXY_TYPE:-http}
+      - USE_OPENAI_FOR_USER_ANALYSIS=${USE_OPENAI_FOR_USER_ANALYSIS:-True}
+      
+      # Yandex Music
+      - YANDEX_MUSIC_TOKEN=${YANDEX_MUSIC_TOKEN:-}
+      
+      # Other
+      - AUDIO_UPLOAD_DIR=/app/backend/uploads
+      - TOP_N_SIMILAR_ARTISTS=3
+    volumes:
+      # Сохраняем uploads между перезапусками
+      - ./backend/uploads:/app/backend/uploads
+      - ./backend/songs:/app/backend/songs
+      - ./backend/artist_vocals:/app/backend/artist_vocals
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - edinorok-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: edinorok-db
+    environment:
+      - POSTGRES_DB=edinorok
+      - POSTGRES_USER=edinorok_user
+      - POSTGRES_PASSWORD=password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - edinorok-network
+
+volumes:
+  postgres_data:
+
+networks:
+  edinorok-network:
+    driver: bridge
