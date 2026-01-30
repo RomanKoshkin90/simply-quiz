@@ -169,113 +169,139 @@ async def main(filter_artist: str = None):
     
     async with AsyncSessionLocal() as db:
         for idx, mp3_file in enumerate(mp3_files, 1):
-            print(f"\n🎵 {idx}/{len(mp3_files)}: {mp3_file.name}")
-            
-            # Парсим название
-            parsed = parse_song_filename(mp3_file.name)
-            if not parsed:
-                errors += 1
-                continue
-            
-            artist_name = parsed["artist"]
-            song_title = parsed["title"]
-            
-            print(f"   🎤 Артист: {artist_name}")
-            print(f"   🎶 Песня: {song_title}")
-            
-            # Ищем артиста в базе
-            result = await db.execute(
-                select(ArtistProfile).where(ArtistProfile.name == artist_name)
-            )
-            artist = result.scalar_one_or_none()
-            
-            if not artist:
-                print(f"   ⚠️  Артист '{artist_name}' не найден в базе. Пропускаю.")
-                skipped += 1
-                continue
-            
-            # Проверяем есть ли уже эта песня
-            result = await db.execute(
-                select(Song).where(
-                    Song.artist_id == artist.id,
-                    Song.title == song_title
-                )
-            )
-            existing_song = result.scalar_one_or_none()
-            
-            if existing_song:
-                print(f"   ⏭️  Песня уже есть в базе")
-                skipped += 1
-                continue
-            
-            # Анализируем аудио
-            print(f"      Анализирую аудио...")
-            audio_features = await process_song_audio(str(mp3_file))
-            
-            if not audio_features:
-                errors += 1
-                continue
-            
-            # Определяем сложность на основе диапазона
-            pitch_range = audio_features["max_pitch_hz"] - audio_features["min_pitch_hz"]
-            if pitch_range < 200:
-                difficulty = 1  # Легкая
-            elif pitch_range < 400:
-                difficulty = 2  # Средняя
-            elif pitch_range < 600:
-                difficulty = 3  # Выше среднего
-            elif pitch_range < 800:
-                difficulty = 4  # Сложная
-            else:
-                difficulty = 5  # Очень сложная
-            
-            # Ищем Яндекс Музыка ID если доступен
-            yandex_music_id = None
-            yandex_music_url = None
-            
-            if yandex_enabled:
+            try:
+                print(f"\n🎵 {idx}/{len(mp3_files)}: {mp3_file.name}")
+
+                # Парсим название
+                parsed = parse_song_filename(mp3_file.name)
+                if not parsed:
+                    errors += 1
+                    continue
+
+                artist_name = parsed["artist"]
+                song_title = parsed["title"]
+
+                print(f"   🎤 Артист: {artist_name}")
+                print(f"   🎶 Песня: {song_title}")
+
+                # Ищем артиста в базе (берем первого если есть дубликаты)
                 try:
-                    print(f"      Ищу на Яндекс Музыке...")
-                    track_data = await yandex_client.search_track(
-                        artist=artist_name,
-                        title=song_title
+                    result = await db.execute(
+                        select(ArtistProfile).where(ArtistProfile.name == artist_name).limit(1)
                     )
-                    
-                    if track_data:
-                        yandex_music_id = track_data["id"]
-                        yandex_music_url = track_data["url"]
-                        print(f"      ✅ Найдено на Яндекс Музыке: {track_data['name']}")
-                    else:
-                        print(f"      ⚠️  Не найдено на Яндекс Музыке")
-                    
-                    # Задержка чтобы не перегружать API
-                    await asyncio.sleep(0.5)
-                    
+                    artist = result.scalar_one_or_none()
                 except Exception as e:
-                    print(f"      ⚠️  Ошибка Яндекс Музыка API: {e}")
-            
-            # Создаем запись в БД
-            new_song = Song(
-                title=song_title,
-                artist_id=artist.id,
-                min_pitch_hz=audio_features["min_pitch_hz"],
-                max_pitch_hz=audio_features["max_pitch_hz"],
-                duration_seconds=audio_features["duration_seconds"],
-                difficulty=difficulty,
-                genre=artist.genre,  # Берем жанр артиста
-                yandex_music_id=yandex_music_id,
-                yandex_music_url=yandex_music_url
-            )
-            
-            db.add(new_song)
-            await db.commit()
-            
-            print(f"   ✅ Добавлена в базу")
-            print(f"      Диапазон: {audio_features['min_pitch_hz']:.0f} - {audio_features['max_pitch_hz']:.0f} Hz")
-            print(f"      Длительность: {audio_features['duration_seconds']} сек")
-            print(f"      Сложность: {difficulty}/5 {'⭐' * difficulty}")
-            
-            processed += 1
+                    print(f"   ⚠️  Ошибка поиска артиста: {e}")
+                    print(f"   ⏭️  Пропускаю и продолжаю...")
+                    errors += 1
+                    continue
+
+                if not artist:
+                    print(f"   ⚠️  Артист '{artist_name}' не найден в базе. Пропускаю.")
+                    skipped += 1
+                    continue
+
+                # Проверяем есть ли уже эта песня
+                try:
+                    result = await db.execute(
+                        select(Song).where(
+                            Song.artist_id == artist.id,
+                            Song.title == song_title
+                        )
+                    )
+                    existing_song = result.scalar_one_or_none()
+
+                    if existing_song:
+                        print(f"   ⏭️  Песня уже есть в базе")
+                        skipped += 1
+                        continue
+                except Exception as e:
+                    print(f"   ⚠️  Ошибка проверки существующей песни: {e}")
+                    print(f"   ⏭️  Пропускаю и продолжаю...")
+                    errors += 1
+                    continue
+
+                # Анализируем аудио
+                print(f"      Анализирую аудио...")
+                audio_features = await process_song_audio(str(mp3_file))
+
+                if not audio_features:
+                    errors += 1
+                    continue
+
+                # Определяем сложность на основе диапазона
+                pitch_range = audio_features["max_pitch_hz"] - audio_features["min_pitch_hz"]
+                if pitch_range < 200:
+                    difficulty = 1  # Легкая
+                elif pitch_range < 400:
+                    difficulty = 2  # Средняя
+                elif pitch_range < 600:
+                    difficulty = 3  # Выше среднего
+                elif pitch_range < 800:
+                    difficulty = 4  # Сложная
+                else:
+                    difficulty = 5  # Очень сложная
+
+                # Ищем Яндекс Музыка ID если доступен
+                yandex_music_id = None
+                yandex_music_url = None
+
+                if yandex_enabled:
+                    try:
+                        print(f"      Ищу на Яндекс Музыке...")
+                        track_data = await yandex_client.search_track(
+                            artist=artist_name,
+                            title=song_title
+                        )
+
+                        if track_data:
+                            yandex_music_id = track_data["id"]
+                            yandex_music_url = track_data["url"]
+                            print(f"      ✅ Найдено на Яндекс Музыке: {track_data['name']}")
+                        else:
+                            print(f"      ⚠️  Не найдено на Яндекс Музыке")
+
+                        # Задержка чтобы не перегружать API
+                        await asyncio.sleep(0.5)
+
+                    except Exception as e:
+                        print(f"      ⚠️  Ошибка Яндекс Музыка API: {e}")
+
+                # Создаем запись в БД
+                try:
+                    new_song = Song(
+                        title=song_title,
+                        artist_id=artist.id,
+                        min_pitch_hz=audio_features["min_pitch_hz"],
+                        max_pitch_hz=audio_features["max_pitch_hz"],
+                        duration_seconds=audio_features["duration_seconds"],
+                        difficulty=difficulty,
+                        genre=artist.genre,  # Берем жанр артиста
+                        yandex_music_id=yandex_music_id,
+                        yandex_music_url=yandex_music_url
+                    )
+
+                    db.add(new_song)
+                    await db.commit()
+
+                    print(f"   ✅ Добавлена в базу")
+                    print(f"      Диапазон: {audio_features['min_pitch_hz']:.0f} - {audio_features['max_pitch_hz']:.0f} Hz")
+                    print(f"      Длительность: {audio_features['duration_seconds']} сек")
+                    print(f"      Сложность: {difficulty}/5 {'⭐' * difficulty}")
+
+                    processed += 1
+
+                except Exception as e:
+                    print(f"   ❌ Ошибка сохранения в БД: {e}")
+                    print(f"   ⏭️  Откатываю изменения и продолжаю...")
+                    await db.rollback()
+                    errors += 1
+
+            except Exception as e:
+                print(f"   ❌ Непредвиденная ошибка: {e}")
+                print(f"   ⏭️  Продолжаю обработку следующего файла...")
+                errors += 1
+                continue
     
     # Итоги
     print("\n" + "=" * 60)
