@@ -53,6 +53,37 @@ function AnalysisResults({ data }) {
     email: ''
   })
 
+  // Отправка в Telegram
+  const sendToTelegram = async (data) => {
+    const TELEGRAM_BOT_TOKEN = '8408102586:AAEP9p5SDgLxaIol02B0qkBIESFZbdYXJsM'
+    const TELEGRAM_CHAT_ID = '-5281969218'
+
+    const message = `🎵 Новая заявка в квизе\n\n👤 Имя: ${data.name}\n📱 Телефон: ${data.phone}\n📧 Email: ${data.email}`
+
+    try {
+      const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+          parse_mode: 'HTML'
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      return true
+    } catch (error) {
+      console.error('Error sending to Telegram:', error)
+      return false
+    }
+  }
+
   // Автоматическая разблокировка при заполнении всех полей
   useEffect(() => {
     const isFormValid = formData.name.trim() !== '' &&
@@ -198,7 +229,11 @@ function AnalysisResults({ data }) {
                   exit={{ opacity: 0 }}
                   className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-md rounded-xl p-6"
                 >
-                  <form onSubmit={(e) => { e.preventDefault(); setIsLocked(false); }} className="w-full max-w-md">
+                  <form onSubmit={async (e) => {
+                    e.preventDefault();
+                    await sendToTelegram(formData);
+                    setIsLocked(false);
+                  }} className="w-full max-w-md">
                     <div className="text-center mb-6">
                       <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                         <Lock className="w-8 h-8 text-primary" />
@@ -238,7 +273,7 @@ function AnalysisResults({ data }) {
                       type="submit"
                       className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
                     >
-                      Открыть
+                      Отправить
                     </button>
                   </form>
                 </motion.div>
