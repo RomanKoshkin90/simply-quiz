@@ -160,7 +160,7 @@ function AnalysisResults({ data }) {
             <User className="w-4 h-4 text-primary" />
             <h3 className="font-semibold text-slate-800">Похожие артисты</h3>
           </div>
-          <div className="space-y-2">
+          <div className={`space-y-2 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
             {top_similar_artists.length > 0 ? (
               top_similar_artists.map((artist, i) => (
                 <ArtistCard key={artist.artist_id} artist={artist} rank={i + 1} />

@@ -1043,7 +1043,7 @@ function LiveVoiceAnalyzer() {
                   <User className="w-4 h-4 text-primary" />
                   <h3 className="font-semibold text-slate-800">Похожие артисты</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
                   {analysisData.top_similar_artists.map((artist, i) => (
                     <ArtistCard key={artist.artist_id || i} artist={artist} rank={i + 1} />
                   ))}
