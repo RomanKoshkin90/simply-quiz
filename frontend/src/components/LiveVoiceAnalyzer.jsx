@@ -1059,68 +1059,69 @@ function LiveVoiceAnalyzer() {
                 transition={{ delay: 0.4 }}
                 className="bg-white rounded-2xl p-5 border border-slate-100 mb-6 relative"
               >
-                {/* Форма разблокировки */}
-                <AnimatePresence>
-                  {isLocked && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 rounded-2xl p-6"
-                    >
-                      <form onSubmit={(e) => { e.preventDefault(); setIsLocked(false); }} className="w-full max-w-md">
-                        <div className="text-center mb-6">
-                          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                            <Lock className="w-8 h-8 text-primary" />
+                <div className="flex items-center gap-2 mb-4">
+                  <Music className="w-4 h-4 text-primary" />
+                  <h3 className="font-semibold text-slate-800">Рекомендованные песни</h3>
+                </div>
+
+                <div className="relative">
+                  {/* Форма разблокировки */}
+                  <AnimatePresence>
+                    {isLocked && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-xl rounded-xl p-6"
+                      >
+                        <form onSubmit={(e) => { e.preventDefault(); setIsLocked(false); }} className="w-full max-w-md">
+                          <div className="text-center mb-6">
+                            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                              <Lock className="w-8 h-8 text-primary" />
+                            </div>
+                            <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
+                            <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен</p>
                           </div>
-                          <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
-                          <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен</p>
-                        </div>
 
-                        <div className="space-y-3">
-                          <input
-                            type="text"
-                            placeholder="Имя"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-                          />
-                          <input
-                            type="tel"
-                            placeholder="Телефон"
-                            required
-                            value={formData.phone}
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-                          />
-                          <input
-                            type="email"
-                            placeholder="Email"
-                            required
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-                          />
-                        </div>
+                          <div className="space-y-3">
+                            <input
+                              type="text"
+                              placeholder="Имя"
+                              required
+                              value={formData.name}
+                              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                            />
+                            <input
+                              type="tel"
+                              placeholder="Телефон"
+                              required
+                              value={formData.phone}
+                              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                            />
+                            <input
+                              type="email"
+                              placeholder="Email"
+                              required
+                              value={formData.email}
+                              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                            />
+                          </div>
 
-                        <button
-                          type="submit"
-                          className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
-                        >
-                          Открыть
-                        </button>
-                      </form>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                          <button
+                            type="submit"
+                            className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
+                          >
+                            Открыть
+                          </button>
+                        </form>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
-                <div className={`${isLocked ? 'blur-md pointer-events-none' : ''}`}>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Music className="w-4 h-4 text-primary" />
-                    <h3 className="font-semibold text-slate-800">Рекомендованные песни</h3>
-                  </div>
-                  <div className="space-y-3">
+                  <div className={`space-y-3 ${isLocked ? 'pointer-events-none' : ''}`}>
                     {analysisData.recommended_songs.map((song, i) => (
                       <SongCard key={song.song_id || i} song={song} isLocked={isLocked} />
                     ))}
