@@ -4,6 +4,7 @@ import { Mic, MicOff, RotateCcw, Mic2, Activity, Gauge, Music, Info, AlertCircle
 import Spectrogram from './Spectrogram'
 import ArtistCard from './ArtistCard'
 import SongCard from './SongCard'
+import { sendToTelegram } from '../utils/telegram'
 
 // Русские названия нот
 const NOTE_NAMES_RU = {
@@ -141,53 +142,6 @@ function LiveVoiceAnalyzer() {
     return () => stopRecording()
   }, [])
 
-  // Отправка в Telegram
-  const sendToTelegram = async (data) => {
-    const TELEGRAM_BOT_TOKEN = '8408102586:AAEP9p5SDgLxaIol02B0qkBIESFZbdYXJsM'
-    const TELEGRAM_CHAT_ID = '-5281969218'
-
-    const message = `🎵 Новая заявка на рекомендации\n\n👤 Имя: ${data.name}\n📱 Телефон: ${data.phone}\n📧 Email: ${data.email}`
-
-    try {
-      const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: message,
-          parse_mode: 'HTML'
-        })
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to send message')
-      }
-
-      return true
-    } catch (error) {
-      console.error('Error sending to Telegram:', error)
-      return false
-    }
-  }
-
-  // Автоматическая разблокировка при заполнении всех полей
-  useEffect(() => {
-    const isFormValid = formData.name.trim() !== '' &&
-                       formData.phone.trim() !== '' &&
-                       formData.email.trim() !== '' &&
-                       formData.email.includes('@')
-
-    if (isFormValid && isLocked) {
-      const timer = setTimeout(() => {
-        console.log('Songs unlocked:', formData)
-        setIsLocked(false)
-      }, 500)
-
-      return () => clearTimeout(timer)
-    }
-  }, [formData, isLocked])
 
   const startRecording = async () => {
     try {
