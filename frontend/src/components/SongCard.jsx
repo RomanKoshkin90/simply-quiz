@@ -8,7 +8,7 @@ function SongCard({ song, isLocked = false }) {
 
   return (
     <div className="group rounded-xl bg-slate-50/80 backdrop-blur-md hover:bg-slate-100/80 transition-colors overflow-hidden relative">
-      <div className={`p-3 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+      <div className={`p-3 ${isLocked ? 'blur-md pointer-events-none' : ''}`}>
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
             <Music className="w-4 h-4 text-primary" />

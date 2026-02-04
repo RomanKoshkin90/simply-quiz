@@ -1066,7 +1066,7 @@ function LiveVoiceAnalyzer() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 backdrop-blur-lg rounded-2xl p-6"
+                      className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-2xl rounded-2xl p-6"
                     >
                       <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-md">
                         <div className="text-center mb-6">
@@ -1112,7 +1112,7 @@ function LiveVoiceAnalyzer() {
                   )}
                 </AnimatePresence>
 
-                <div className={`${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+                <div className={`${isLocked ? 'blur-md pointer-events-none' : ''}`}>
                   <div className="flex items-center gap-2 mb-4">
                     <Music className="w-4 h-4 text-primary" />
                     <h3 className="font-semibold text-slate-800">Рекомендованные песни</h3>
