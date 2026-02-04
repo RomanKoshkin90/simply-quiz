@@ -196,7 +196,7 @@ function AnalysisResults({ data }) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 backdrop-blur-xl rounded-xl p-6"
+                  className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-md rounded-xl p-6"
                 >
                   <form onSubmit={(e) => { e.preventDefault(); setIsLocked(false); }} className="w-full max-w-md">
                     <div className="text-center mb-6">
@@ -245,7 +245,7 @@ function AnalysisResults({ data }) {
               )}
             </AnimatePresence>
 
-            <div className={`grid sm:grid-cols-2 lg:grid-cols-3 gap-3 ${isLocked ? 'pointer-events-none' : ''}`}>
+            <div className={`grid sm:grid-cols-2 lg:grid-cols-3 gap-3 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
               {recommended_songs.slice(0, 6).map(song => (
                 <SongCard key={song.song_id} song={song} isLocked={isLocked} />
               ))}
