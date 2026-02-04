@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion'
-import { Music, User, Activity, Gauge, Mic2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Music, User, Activity, Gauge, Mic2, Lock } from 'lucide-react'
 import VocalRangeChart from './VocalRangeChart'
 import ArtistCard from './ArtistCard'
 import SongCard from './SongCard'
@@ -41,9 +42,33 @@ function AnalysisResults({ data }) {
   const { pitch_analysis, timbre_features, top_similar_artists, recommended_songs } = data
   const voiceTypeName = voiceTypeNames[pitch_analysis.detected_voice_type] || pitch_analysis.detected_voice_type
   const voiceTypeDesc = voiceTypeDescriptions[pitch_analysis.detected_voice_type] || ''
-  
+
   const minNoteRu = toRussianNote(pitch_analysis.min_pitch_note)
   const maxNoteRu = toRussianNote(pitch_analysis.max_pitch_note)
+
+  const [isLocked, setIsLocked] = useState(true)
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: ''
+  })
+
+  // Автоматическая разблокировка при заполнении всех полей
+  useEffect(() => {
+    const isFormValid = formData.name.trim() !== '' &&
+                       formData.phone.trim() !== '' &&
+                       formData.email.trim() !== '' &&
+                       formData.email.includes('@')
+
+    if (isFormValid && isLocked) {
+      const timer = setTimeout(() => {
+        console.log('Songs unlocked:', formData)
+        setIsLocked(false)
+      }, 500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [formData, isLocked])
 
   return (
     <motion.div
@@ -155,24 +180,79 @@ function AnalysisResults({ data }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="bg-white rounded-2xl p-5 border border-slate-100"
+        className="bg-white rounded-2xl p-5 border border-slate-100 relative"
       >
-        <div className="flex items-center gap-2 mb-3">
-          <Music className="w-4 h-4 text-accent" />
-          <h3 className="font-semibold text-slate-800">Песни, которые тебе подойдут</h3>
+        {/* Форма разблокировки */}
+        <AnimatePresence>
+          {isLocked && recommended_songs.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 backdrop-blur-lg rounded-2xl p-6"
+            >
+              <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-md">
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Lock className="w-8 h-8 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
+                  <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен</p>
+                </div>
+
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    placeholder="Имя"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Телефон"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                  />
+                </div>
+
+                <p className="text-xs text-slate-400 text-center mt-4">
+                  Песни откроются автоматически после заполнения
+                </p>
+              </form>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div className={`${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <Music className="w-4 h-4 text-accent" />
+            <h3 className="font-semibold text-slate-800">Песни, которые тебе подойдут</h3>
+          </div>
+          {recommended_songs.length > 0 ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {recommended_songs.slice(0, 6).map(song => (
+                <SongCard key={song.song_id} song={song} isLocked={isLocked} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-6">
+              <p className="text-slate-400 text-sm mb-2">Песни появятся скоро!</p>
+              <p className="text-slate-300 text-xs">Мы подберём идеальный репертуар для твоего голоса</p>
+            </div>
+          )}
         </div>
-        {recommended_songs.length > 0 ? (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {recommended_songs.slice(0, 6).map(song => (
-              <SongCard key={song.song_id} song={song} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-6">
-            <p className="text-slate-400 text-sm mb-2">Песни появятся скоро!</p>
-            <p className="text-slate-300 text-xs">Мы подберём идеальный репертуар для твоего голоса</p>
-          </div>
-        )}
       </motion.div>
     </motion.div>
   )

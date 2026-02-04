@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mic, MicOff, RotateCcw, Mic2, Activity, Gauge, Music, Info, AlertCircle, User } from 'lucide-react'
+import { Mic, MicOff, RotateCcw, Mic2, Activity, Gauge, Music, Info, AlertCircle, User, Lock } from 'lucide-react'
 import Spectrogram from './Spectrogram'
 import ArtistCard from './ArtistCard'
 import SongCard from './SongCard'
@@ -117,7 +117,13 @@ function LiveVoiceAnalyzer() {
   const [error, setError] = useState(null)
   const [analysisStage, setAnalysisStage] = useState('')
   const [analysisProgress, setAnalysisProgress] = useState(0)
-  
+  const [isLocked, setIsLocked] = useState(true)
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: ''
+  })
+
   const audioContextRef = useRef(null)
   const analyserRef = useRef(null)
   const mediaStreamRef = useRef(null)
@@ -134,6 +140,23 @@ function LiveVoiceAnalyzer() {
   useEffect(() => {
     return () => stopRecording()
   }, [])
+
+  // Автоматическая разблокировка при заполнении всех полей
+  useEffect(() => {
+    const isFormValid = formData.name.trim() !== '' &&
+                       formData.phone.trim() !== '' &&
+                       formData.email.trim() !== '' &&
+                       formData.email.includes('@')
+
+    if (isFormValid && isLocked) {
+      const timer = setTimeout(() => {
+        console.log('Songs unlocked:', formData)
+        setIsLocked(false)
+      }, 500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [formData, isLocked])
 
   const startRecording = async () => {
     try {
@@ -1034,16 +1057,71 @@ function LiveVoiceAnalyzer() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white rounded-2xl p-5 border border-slate-100 mb-6"
+                className="bg-white rounded-2xl p-5 border border-slate-100 mb-6 relative"
               >
-                <div className="flex items-center gap-2 mb-4">
-                  <Music className="w-4 h-4 text-primary" />
-                  <h3 className="font-semibold text-slate-800">Рекомендованные песни</h3>
-                </div>
-                <div className="space-y-3">
-                  {analysisData.recommended_songs.map((song, i) => (
-                    <SongCard key={song.song_id || i} song={song} />
-                  ))}
+                {/* Форма разблокировки */}
+                <AnimatePresence>
+                  {isLocked && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 backdrop-blur-lg rounded-2xl p-6"
+                    >
+                      <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-md">
+                        <div className="text-center mb-6">
+                          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                            <Lock className="w-8 h-8 text-primary" />
+                          </div>
+                          <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
+                          <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен</p>
+                        </div>
+
+                        <div className="space-y-3">
+                          <input
+                            type="text"
+                            placeholder="Имя"
+                            required
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                          />
+                          <input
+                            type="tel"
+                            placeholder="Телефон"
+                            required
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                          />
+                          <input
+                            type="email"
+                            placeholder="Email"
+                            required
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+                          />
+                        </div>
+
+                        <p className="text-xs text-slate-400 text-center mt-4">
+                          Песни откроются автоматически после заполнения
+                        </p>
+                      </form>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className={`${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Music className="w-4 h-4 text-primary" />
+                    <h3 className="font-semibold text-slate-800">Рекомендованные песни</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {analysisData.recommended_songs.map((song, i) => (
+                      <SongCard key={song.song_id || i} song={song} isLocked={isLocked} />
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             )}

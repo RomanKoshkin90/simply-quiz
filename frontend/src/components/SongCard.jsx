@@ -1,100 +1,13 @@
-import { useState, useEffect } from 'react'
-import { Music, Star, ExternalLink, Headphones, Lock } from 'lucide-react'
+import { useState } from 'react'
+import { Music, Star, ExternalLink, Headphones } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-function SongCard({ song }) {
+function SongCard({ song, isLocked = false }) {
   const { title, artist_name, pitch_match_score, difficulty, yandex_music_id, yandex_music_url } = song
   const [showPlayer, setShowPlayer] = useState(false)
-  const [isLocked, setIsLocked] = useState(true)
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    email: ''
-  })
-
-  // Автоматическая разблокировка при заполнении всех полей
-  useEffect(() => {
-    const isFormValid = formData.name.trim() !== '' &&
-                       formData.phone.trim() !== '' &&
-                       formData.email.trim() !== '' &&
-                       formData.email.includes('@')
-
-    if (isFormValid && isLocked) {
-      // Небольшая задержка для плавности
-      const timer = setTimeout(() => {
-        console.log('Form auto-unlocked:', formData)
-        setIsLocked(false)
-      }, 500)
-
-      return () => clearTimeout(timer)
-    }
-  }, [formData, isLocked])
-
-  const handleUnlock = (e) => {
-    e.preventDefault()
-    // Здесь можно добавить отправку данных на сервер
-    console.log('Form submitted:', formData)
-    setIsLocked(false)
-  }
 
   return (
     <div className="group rounded-xl bg-slate-50/80 backdrop-blur-md hover:bg-slate-100/80 transition-colors overflow-hidden relative">
-      {/* Форма разблокировки */}
-      <AnimatePresence>
-        {isLocked && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 backdrop-blur-lg p-4"
-          >
-            <form onSubmit={handleUnlock} className="w-full max-w-xs">
-              <div className="text-center mb-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-3">
-                  <Lock className="w-6 h-6 text-primary" />
-                </div>
-                <h3 className="font-semibold text-slate-800 mb-1">Открыть трек</h3>
-                <p className="text-xs text-slate-500">Заполни форму для доступа</p>
-              </div>
-
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  placeholder="Имя"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-                />
-                <input
-                  type="tel"
-                  placeholder="Телефон"
-                  required
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-                />
-                <input
-                  type="email"
-                  placeholder="Email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full mt-4 px-4 py-2.5 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
-              >
-                Открыть
-              </button>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div className={`p-3 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -170,7 +83,7 @@ function SongCard({ song }) {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className={`overflow-hidden ${isLocked ? 'blur-sm pointer-events-none' : ''}`}
+            className="overflow-hidden"
           >
             <div className="px-3 pb-3">
               <iframe
