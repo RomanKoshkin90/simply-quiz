@@ -189,9 +189,9 @@ function AnalysisResults({ data }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 z-10 flex items-center justify-center bg-white/70 backdrop-blur-2xl rounded-2xl p-6"
+              className="absolute inset-0 z-10 flex items-center justify-center bg-white/95 rounded-2xl p-6"
             >
-              <form onSubmit={(e) => e.preventDefault()} className="w-full max-w-md">
+              <form onSubmit={(e) => { e.preventDefault(); setIsLocked(false); }} className="w-full max-w-md">
                 <div className="text-center mb-6">
                   <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
                     <Lock className="w-8 h-8 text-primary" />
@@ -227,9 +227,12 @@ function AnalysisResults({ data }) {
                   />
                 </div>
 
-                <p className="text-xs text-slate-400 text-center mt-4">
-                  Песни откроются автоматически после заполнения
-                </p>
+                <button
+                  type="submit"
+                  className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
+                >
+                  Открыть
+                </button>
               </form>
             </motion.div>
           )}
