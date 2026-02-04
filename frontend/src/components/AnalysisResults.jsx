@@ -193,7 +193,7 @@ function AnalysisResults({ data }) {
                         <Lock className="w-8 h-8 text-primary" />
                       </div>
                       <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
-                      <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен</p>
+                      <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен к похожим артистам и к подборке песен</p>
                     </div>
 
                     <div className="space-y-3">
