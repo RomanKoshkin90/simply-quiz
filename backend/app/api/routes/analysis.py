@@ -165,6 +165,8 @@ async def analyze_voice(
                     'artist_id': a.artist_id,
                     'name': a.name,
                     'similarity_score': a.similarity_score,
+                    'voice_type': a.voice_type,
+                    'genre': a.genre,
                 }
                 for a in result.similar_artists
             ],
@@ -173,6 +175,10 @@ async def analyze_voice(
                     'song_id': s.song_id,
                     'title': s.title,
                     'artist_name': s.artist_name,
+                    'pitch_match_score': s.pitch_match_score,
+                    'difficulty': s.difficulty,
+                    'yandex_music_id': s.yandex_music_id,
+                    'yandex_music_url': s.yandex_music_url,
                 }
                 for s in result.recommended_songs
             ],
@@ -221,6 +227,8 @@ async def analyze_voice(
                     artist_name=s.artist_name,
                     pitch_match_score=round(s.pitch_match_score, 1),
                     difficulty=s.difficulty,
+                    yandex_music_id=s.yandex_music_id,
+                    yandex_music_url=s.yandex_music_url,
                 )
                 for s in result.recommended_songs
             ],
@@ -287,6 +295,8 @@ async def get_analysis_result(
                 artist_id=a['artist_id'],
                 name=a['name'],
                 similarity_score=a['similarity_score'],
+                voice_type=a.get('voice_type'),
+                genre=a.get('genre'),
             )
             for a in (analysis.similar_artists or [])
         ],
@@ -295,7 +305,10 @@ async def get_analysis_result(
                 song_id=s['song_id'],
                 title=s['title'],
                 artist_name=s['artist_name'],
-                pitch_match_score=0,  # Not stored
+                pitch_match_score=s.get('pitch_match_score', 0),
+                difficulty=s.get('difficulty'),
+                yandex_music_id=s.get('yandex_music_id'),
+                yandex_music_url=s.get('yandex_music_url'),
             )
             for s in (analysis.recommended_songs or [])
         ],

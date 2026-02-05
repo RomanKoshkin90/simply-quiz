@@ -3,7 +3,18 @@ import { Music, Star, ExternalLink, Headphones } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 function SongCard({ song, isLocked = false }) {
-  const { title, artist_name, pitch_match_score, difficulty, yandex_music_id, yandex_music_url } = song
+  if (!song) {
+    return null
+  }
+
+  const {
+    title = 'Unknown Song',
+    artist_name = 'Unknown Artist',
+    pitch_match_score = 0,
+    difficulty,
+    yandex_music_id,
+    yandex_music_url
+  } = song
   const [showPlayer, setShowPlayer] = useState(false)
 
   return (

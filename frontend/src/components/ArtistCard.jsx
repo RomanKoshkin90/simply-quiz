@@ -3,7 +3,11 @@ import { motion } from 'framer-motion'
 const medals = ['🥇', '🥈', '🥉']
 
 function ArtistCard({ artist, rank }) {
-  const { name, similarity_score, voice_type, genre } = artist
+  if (!artist) {
+    return null
+  }
+
+  const { name = 'Unknown Artist', similarity_score = 0, voice_type, genre } = artist
 
   const getBarColor = (score) => {
     if (score >= 80) return 'bg-green-400'
@@ -25,7 +29,7 @@ function ArtistCard({ artist, rank }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="font-medium text-slate-800 truncate">{name}</div>
-          <div className="text-xs text-slate-400">{genre || voice_type}</div>
+          <div className="text-xs text-slate-400">{genre || voice_type || 'N/A'}</div>
         </div>
         <div className="text-right">
           <div className="font-mono font-semibold text-slate-700">{Math.round(similarity_score)}%</div>

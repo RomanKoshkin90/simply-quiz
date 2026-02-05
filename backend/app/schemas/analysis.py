@@ -38,6 +38,8 @@ class RecommendedSong(BaseModel):
     artist_name: str
     pitch_match_score: float = Field(..., description="How well song matches user's range")
     difficulty: Optional[int] = Field(None, ge=1, le=5)
+    yandex_music_id: Optional[str] = None
+    yandex_music_url: Optional[str] = None
 
 
 class TimbreFeatures(BaseModel):

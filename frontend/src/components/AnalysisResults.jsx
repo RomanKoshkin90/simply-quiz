@@ -40,8 +40,12 @@ const voiceTypeDescriptions = {
 }
 
 function AnalysisResults({ data }) {
-  const { pitch_analysis, timbre_features, top_similar_artists, recommended_songs } = data
-  const voiceTypeName = voiceTypeNames[pitch_analysis.detected_voice_type] || pitch_analysis.detected_voice_type
+  if (!data) {
+    return null
+  }
+
+  const { pitch_analysis = {}, timbre_features = {}, top_similar_artists = [], recommended_songs = [] } = data
+  const voiceTypeName = voiceTypeNames[pitch_analysis.detected_voice_type] || pitch_analysis.detected_voice_type || 'Не определен'
   const voiceTypeDesc = voiceTypeDescriptions[pitch_analysis.detected_voice_type] || ''
 
   const minNoteRu = toRussianNote(pitch_analysis.min_pitch_note)
@@ -79,14 +83,16 @@ function AnalysisResults({ data }) {
               <span className="font-semibold">{minNoteRu}</span>
               {' — '}
               <span className="font-semibold">{maxNoteRu}</span>
-              <span className="text-white/60 ml-2">({pitch_analysis.octave_range.toFixed(1)} октав)</span>
+              {pitch_analysis.octave_range && (
+                <span className="text-white/60 ml-2">({pitch_analysis.octave_range.toFixed(1)} октав)</span>
+              )}
             </p>
           </div>
           <div className="md:ml-auto flex gap-4">
             {[
-              { label: 'Мин', value: Math.round(pitch_analysis.min_pitch_hz) },
-              { label: 'Медиана', value: Math.round(pitch_analysis.median_pitch_hz) },
-              { label: 'Макс', value: Math.round(pitch_analysis.max_pitch_hz) },
+              { label: 'Мин', value: Math.round(pitch_analysis.min_pitch_hz || 0) },
+              { label: 'Медиана', value: Math.round(pitch_analysis.median_pitch_hz || 0) },
+              { label: 'Макс', value: Math.round(pitch_analysis.max_pitch_hz || 0) },
             ].map(item => (
               <div key={item.label} className="px-4 py-2 rounded-lg bg-white/10 text-center">
                 <div className="font-mono text-lg">{item.value}</div>
@@ -146,9 +152,9 @@ function AnalysisResults({ data }) {
             <h3 className="font-semibold text-slate-800">Похожие артисты</h3>
           </div>
           <div className={`space-y-2 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
-            {top_similar_artists.length > 0 ? (
+            {top_similar_artists && Array.isArray(top_similar_artists) && top_similar_artists.length > 0 ? (
               top_similar_artists.map((artist, i) => (
-                <ArtistCard key={artist.artist_id} artist={artist} rank={i + 1} />
+                artist ? <ArtistCard key={artist.artist_id || i} artist={artist} rank={i + 1} /> : null
               ))
             ) : (
               <div className="text-center py-6">
@@ -172,7 +178,7 @@ function AnalysisResults({ data }) {
           <h3 className="font-semibold text-slate-800">Песни, которые тебе подойдут</h3>
         </div>
 
-        {recommended_songs.length > 0 ? (
+        {recommended_songs && Array.isArray(recommended_songs) && recommended_songs.length > 0 ? (
           <div className="relative">
             {/* Форма разблокировки */}
             <AnimatePresence>
@@ -227,16 +233,22 @@ function AnalysisResults({ data }) {
                       type="submit"
                       className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
                     >
-                      Отправить
+                      Открыть
                     </button>
+                    <p className="text-xs text-slate-500 text-center mt-3">
+                      Нажимая на кнопку «Открыть», я даю согласие на обработку{' '}
+                      <a href="#" className="text-primary hover:underline">Персональных данных</a>
+                      {' '}и принимаю условия{' '}
+                      <a href="#" className="text-primary hover:underline">Пользовательского соглашения</a>
+                    </p>
                   </form>
                 </motion.div>
               )}
             </AnimatePresence>
 
             <div className={`grid sm:grid-cols-2 lg:grid-cols-3 gap-3 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
-              {recommended_songs.slice(0, 6).map(song => (
-                <SongCard key={song.song_id} song={song} isLocked={isLocked} />
+              {recommended_songs.slice(0, 6).map((song, i) => (
+                song ? <SongCard key={song.song_id || i} song={song} isLocked={isLocked} /> : null
               ))}
             </div>
           </div>

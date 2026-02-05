@@ -36,13 +36,13 @@ const hzToNote = (frequency) => {
 // Определение типа голоса по диапазону
 const detectVoiceType = (minHz, maxHz) => {
   const medianHz = (minHz + maxHz) / 2
-  
-  if (medianHz < 130) return { type: 'bass', name: 'Бас', desc: 'Самый низкий мужской голос' }
-  if (medianHz < 165) return { type: 'baritone', name: 'Баритон', desc: 'Средний мужской голос' }
-  if (medianHz < 260) return { type: 'tenor', name: 'Тенор', desc: 'Высокий мужской голос' }
-  if (medianHz < 350) return { type: 'alto', name: 'Альт', desc: 'Низкий женский голос' }
-  if (medianHz < 440) return { type: 'mezzo-soprano', name: 'Меццо-сопрано', desc: 'Средний женский голос' }
-  return { type: 'soprano', name: 'Сопрано', desc: 'Высокий женский голос' }
+
+  if (medianHz < 130) return { type: 'bass', name: 'Бас', desc: 'Самый низкий голос' }
+  if (medianHz < 165) return { type: 'baritone', name: 'Баритон', desc: 'Средний низкий голос' }
+  if (medianHz < 260) return { type: 'tenor', name: 'Тенор', desc: 'Высокий голос' }
+  if (medianHz < 350) return { type: 'alto', name: 'Альт', desc: 'Низкий голос' }
+  if (medianHz < 440) return { type: 'mezzo-soprano', name: 'Меццо-сопрано', desc: 'Средний голос' }
+  return { type: 'soprano', name: 'Сопрано', desc: 'Высокий голос' }
 }
 
 // Оценка тембра на основе записи
@@ -1016,12 +1016,76 @@ function LiveVoiceAnalyzer() {
               </motion.div>
             )}
 
-            {/* Похожие артисты из API */}
-            {analysisData?.top_similar_artists && analysisData.top_similar_artists.length > 0 && (
+            {/* Форма разблокировки */}
+            {isLocked && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
+                className="bg-white rounded-2xl p-6 border border-slate-100 mb-6"
+              >
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  await sendToTelegram(formData);
+                  setIsLocked(false);
+                }} className="w-full max-w-md mx-auto">
+                  <div className="text-center mb-6">
+                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <Lock className="w-8 h-8 text-primary" />
+                    </div>
+                    <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
+                    <p className="text-sm text-slate-500">Заполни форму для доступа к подборке похожих артистов и песен</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      placeholder="Имя"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                    />
+                    <input
+                      type="tel"
+                      placeholder="Телефон"
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                    />
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
+                  >
+                    Отправить
+                  </button>
+                  <p className="text-xs text-slate-500 text-center mt-3">
+                    Нажимая на кнопку «Отправить», я даю согласие на обработку{' '}
+                    <a href="https://simplyonline.ru/policy" target="_blank" className="text-primary hover:underline">Персональных данных</a>
+                    {' '}и принимаю условия{' '}
+                    <a href="https://simplyonline.ru/useragreement" target="_blank" className="text-primary hover:underline">Пользовательского соглашения</a>
+                  </p>
+                </form>
+              </motion.div>
+            )}
+
+            {/* Похожие артисты из API */}
+            {analysisData?.top_similar_artists && Array.isArray(analysisData.top_similar_artists) && analysisData.top_similar_artists.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
                 className="bg-white rounded-2xl p-5 border border-slate-100 mb-6"
               >
                 <div className="flex items-center gap-2 mb-4">
@@ -1030,91 +1094,28 @@ function LiveVoiceAnalyzer() {
                 </div>
                 <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
                   {analysisData.top_similar_artists.map((artist, i) => (
-                    <ArtistCard key={artist.artist_id || i} artist={artist} rank={i + 1} />
+                    artist ? <ArtistCard key={artist.artist_id || i} artist={artist} rank={i + 1} /> : null
                   ))}
                 </div>
               </motion.div>
             )}
 
             {/* Рекомендованные песни из API */}
-            {analysisData?.recommended_songs && analysisData.recommended_songs.length > 0 && (
+            {analysisData?.recommended_songs && Array.isArray(analysisData.recommended_songs) && analysisData.recommended_songs.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-white rounded-2xl p-5 border border-slate-100 mb-6 relative"
+                transition={{ delay: 0.5 }}
+                className="bg-white rounded-2xl p-5 border border-slate-100 mb-6"
               >
                 <div className="flex items-center gap-2 mb-4">
                   <Music className="w-4 h-4 text-primary" />
                   <h3 className="font-semibold text-slate-800">Рекомендованные песни</h3>
                 </div>
-
-                <div className="relative">
-                  {/* Форма разблокировки */}
-                  <AnimatePresence>
-                    {isLocked && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-md rounded-xl p-6"
-                      >
-                        <form onSubmit={async (e) => {
-                        e.preventDefault();
-                        await sendToTelegram(formData);
-                        setIsLocked(false);
-                      }} className="w-full max-w-md">
-                          <div className="text-center mb-6">
-                            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                              <Lock className="w-8 h-8 text-primary" />
-                            </div>
-                            <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
-                            <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен к похожим артистам и к подборке песен</p>
-                          </div>
-
-                          <div className="space-y-3">
-                            <input
-                              type="text"
-                              placeholder="Имя"
-                              required
-                              value={formData.name}
-                              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
-                            />
-                            <input
-                              type="tel"
-                              placeholder="Телефон"
-                              required
-                              value={formData.phone}
-                              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
-                            />
-                            <input
-                              type="email"
-                              placeholder="Email"
-                              required
-                              value={formData.email}
-                              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                              className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
-                            />
-                          </div>
-
-                          <button
-                            type="submit"
-                            className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
-                          >
-                            Отправить
-                          </button>
-                        </form>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div className={`space-y-3 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
-                    {analysisData.recommended_songs.map((song, i) => (
-                      <SongCard key={song.song_id || i} song={song} isLocked={isLocked} />
-                    ))}
-                  </div>
+                <div className={`space-y-3 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+                  {analysisData.recommended_songs.map((song, i) => (
+                    song ? <SongCard key={song.song_id || i} song={song} isLocked={isLocked} /> : null
+                  ))}
                 </div>
               </motion.div>
             )}
@@ -1124,7 +1125,7 @@ function LiveVoiceAnalyzer() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.4 }}
                 className="bg-blue-50 border border-blue-200 rounded-2xl p-5 mb-6"
               >
                 <div className="flex items-center gap-2 mb-3">

@@ -32,6 +32,8 @@ class SongMatch:
     artist_name: str
     pitch_match_score: float  # 0-100 percentage
     difficulty: Optional[int] = None
+    yandex_music_id: Optional[str] = None
+    yandex_music_url: Optional[str] = None
 
 
 class SimilarityEngine:
@@ -380,6 +382,8 @@ class SimilarityEngine:
                 artist_name=song.get('artist_name', 'Unknown'),
                 pitch_match_score=pitch_score,
                 difficulty=song.get('difficulty'),
+                yandex_music_id=song.get('yandex_music_id'),
+                yandex_music_url=song.get('yandex_music_url'),
             ))
         
         # Sort by match score
