@@ -28,24 +28,24 @@ function SongCard({ song, isLocked = false }) {
             <div className="font-medium text-slate-800 truncate">{title}</div>
             <div className="text-xs text-slate-400 truncate">{artist_name}</div>
             <div className="flex items-center gap-2 mt-1">
-              {pitch_match_score > 0 && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-                  {Math.round(pitch_match_score)}%
-                </span>
-              )}
-              {difficulty && (
-                <div 
-                  className="flex gap-0.5"
-                  title={`Сложность: ${difficulty}/5 ${difficulty === 1 ? '(легкая)' : difficulty === 2 ? '(средняя)' : difficulty === 3 ? '(выше среднего)' : difficulty === 4 ? '(сложная)' : '(очень сложная)'}`}
-                >
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-3 h-3 ${i < difficulty ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`}
-                    />
-                  ))}
-                </div>
-              )}
+{/*               {pitch_match_score > 0 && ( */}
+{/*                 <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary"> */}
+{/*                   {Math.round(pitch_match_score)}% */}
+{/*                 </span> */}
+{/*               )} */}
+{/*               {difficulty && ( */}
+{/*                 <div  */}
+{/*                   className="flex gap-0.5" */}
+{/*                   title={`Сложность: ${difficulty}/5 ${difficulty === 1 ? '(легкая)' : difficulty === 2 ? '(средняя)' : difficulty === 3 ? '(выше среднего)' : difficulty === 4 ? '(сложная)' : '(очень сложная)'}`} */}
+{/*                 > */}
+{/*                   {[...Array(5)].map((_, i) => ( */}
+{/*                     <Star */}
+{/*                       key={i} */}
+{/*                       className={`w-3 h-3 ${i < difficulty ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`} */}
+{/*                     /> */}
+{/*                   ))} */}
+{/*                 </div> */}
+{/*               )} */}
             </div>
           </div>
           
