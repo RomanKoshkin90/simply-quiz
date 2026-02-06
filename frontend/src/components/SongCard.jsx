@@ -55,7 +55,7 @@ function SongCard({ song, isLocked = false }) {
               <>
                 <button
                   onClick={() => setShowPlayer(!showPlayer)}
-                  className="p-1.5 rounded-lg hover:bg-white/80 transition-colors"
+                  className="p-1.5 rounded-[40px] hover:bg-white/80 transition-colors"
                   title={showPlayer ? "Скрыть плеер" : "Послушать"}
                 >
                   <Headphones className={`w-4 h-4 ${showPlayer ? 'text-primary' : 'text-slate-400'}`} />

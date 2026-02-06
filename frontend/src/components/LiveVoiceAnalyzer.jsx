@@ -723,11 +723,11 @@ function LiveVoiceAnalyzer() {
               )}
               
               <div className="relative w-full max-w-xs">
-                <svg viewBox="0 0 200 120" className="w-full">
+                <svg viewBox="-10 -10 220 135" className="w-full">
                   <defs>
                     <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#0ea5e9" />
-                      <stop offset="100%" stopColor="#06b6d4" />
+                      <stop offset="0%" stopColor="#72AEF7" />
+                      <stop offset="100%" stopColor="#5A9DE6" />
                     </linearGradient>
                   </defs>
                   
@@ -758,12 +758,12 @@ function LiveVoiceAnalyzer() {
                   >
                     <line
                       x1="100" y1="100" x2="100" y2="35"
-                      stroke={isRecording ? '#0ea5e9' : '#94a3b8'}
+                      stroke={isRecording ? '#72AEF7' : '#94a3b8'}
                       strokeWidth="3"
                       strokeLinecap="round"
                       transform="rotate(0 100 100)"
                     />
-                    <circle cx="100" cy="100" r="6" fill={isRecording ? '#0ea5e9' : '#94a3b8'} />
+                    <circle cx="100" cy="100" r="6" fill={isRecording ? '#72AEF7' : '#94a3b8'} />
                   </motion.g>
                   
                   {[
@@ -857,7 +857,7 @@ function LiveVoiceAnalyzer() {
               {!isRecording ? (
                 <button
                   onClick={startRecording}
-                  className="flex items-center gap-3 px-8 py-4 rounded-2xl btn-primary shadow-lg shadow-primary/20"
+                  className="flex items-center gap-3 px-8 py-4 rounded-[40px] btn-primary shadow-lg shadow-primary/20"
                 >
                   <Mic className="w-5 h-5" />
                   <span className="font-semibold">Начать петь</span>
@@ -865,7 +865,7 @@ function LiveVoiceAnalyzer() {
               ) : (
                 <button
                   onClick={handleFinish}
-                  className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-red-500 text-white hover:bg-red-600 transition-all pulse-record"
+                  className="flex items-center gap-3 px-8 py-4 rounded-[40px] bg-red-500 text-white hover:bg-red-600 transition-all pulse-record"
                 >
                   <MicOff className="w-5 h-5" />
                   <span className="font-semibold">Закончить ({duration}с)</span>
@@ -929,26 +929,39 @@ function LiveVoiceAnalyzer() {
                 <Activity className="w-4 h-4 text-primary" />
                 <h3 className="font-semibold text-slate-800">Твой вокальный диапазон</h3>
               </div>
-              <div className="relative h-12 bg-slate-100 rounded-lg overflow-hidden">
-                {/* Шкала */}
-                <div className="absolute inset-0 flex items-center justify-between px-2 text-xs text-slate-400">
+              <div className="relative h-12 bg-slate-100 rounded-lg">
+                {/* Шкала - черные ноты */}
+                <div className="absolute inset-0 flex items-center justify-between px-4 text-xs text-slate-800 font-medium pointer-events-none">
                   <span>До2</span>
                   <span>До3</span>
                   <span>До4</span>
                   <span>До5</span>
                   <span>До6</span>
                 </div>
-                {/* Твой диапазон */}
+                {/* Твой диапазон с белыми нотами */}
                 {stats.validSamples > 10 && (
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ 
+                    animate={{
                       width: `${Math.min(100, octaveRange * 25)}%`,
                       left: `${Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100)}%`
                     }}
                     transition={{ duration: 0.8 }}
-                    className="absolute h-full bg-gradient-to-r from-primary to-accent opacity-80 rounded"
-                  />
+                    className="absolute h-full bg-gradient-to-r from-primary to-accent opacity-80 rounded overflow-hidden"
+                  >
+                    {/* Белые ноты поверх синего */}
+                    <div className="absolute h-full flex items-center justify-between px-4 text-xs text-white font-medium pointer-events-none"
+                         style={{
+                           width: `${100 / (Math.min(100, octaveRange * 25) / 100)}%`,
+                           left: `-${(Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100) / (Math.min(100, octaveRange * 25) / 100))}%`
+                         }}>
+                      <span>До2</span>
+                      <span>До3</span>
+                      <span>До4</span>
+                      <span>До5</span>
+                      <span>До6</span>
+                    </div>
+                  </motion.div>
                 )}
               </div>
               <div className="flex justify-between mt-2 text-sm">
@@ -1044,7 +1057,7 @@ function LiveVoiceAnalyzer() {
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                      className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
                     />
                     <input
                       type="tel"
@@ -1052,7 +1065,7 @@ function LiveVoiceAnalyzer() {
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                      className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
                     />
                     <input
                       type="email"
@@ -1060,13 +1073,13 @@ function LiveVoiceAnalyzer() {
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                      className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
                     />
                   </div>
 
                   <button
                     type="submit"
-                    className="w-full mt-4 px-4 py-3 rounded-lg bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
+                    className="w-full mt-4 px-4 py-3 rounded-[40px] bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
                   >
                     Отправить
                   </button>
@@ -1161,7 +1174,7 @@ function LiveVoiceAnalyzer() {
             <div className="flex justify-center">
               <button
                 onClick={reset}
-                className="flex items-center gap-2 px-6 py-3 rounded-xl btn-primary"
+                className="flex items-center gap-2 px-6 py-3 rounded-[40px] btn-primary"
               >
                 <RotateCcw className="w-4 h-4" />
                 <span>Попробовать ещё раз</span>

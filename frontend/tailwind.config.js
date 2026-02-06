@@ -8,10 +8,10 @@ export default {
     extend: {
       colors: {
         // Светлая палитра
-        'primary': '#0ea5e9',
-        'primary-dark': '#0284c7',
-        'primary-light': '#38bdf8',
-        'accent': '#06b6d4',
+        'primary': '#72AEF7',
+        'primary-dark': '#5A9DE6',
+        'primary-light': '#8ABFF9',
+        'accent': '#5A9DE6',
         // Серые
         'slate': {
           50: '#f8fafc',

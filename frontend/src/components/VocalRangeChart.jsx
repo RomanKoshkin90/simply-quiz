@@ -25,9 +25,9 @@ function VocalRangeChart({ minHz, maxHz, medianHz }) {
   }), [minHz, maxHz, medianHz])
 
   return (
-    <div className="relative pt-6 pb-10">
+    <div className="relative pt-8 pb-10 px-2">
       {/* Фон */}
-      <div className="h-10 rounded-lg bg-slate-100 relative overflow-hidden">
+      <div className="h-10 rounded-lg bg-slate-100 relative">
         {/* Диапазон пользователя */}
         <motion.div
           className="absolute top-0 h-full rounded-md bg-gradient-to-r from-primary to-accent"
@@ -59,16 +59,22 @@ function VocalRangeChart({ minHz, maxHz, medianHz }) {
 
       {/* Шкала нот */}
       <div className="absolute bottom-0 left-0 right-0">
-        {NOTES.map(n => (
-          <div
-            key={n.note}
-            className="absolute flex flex-col items-center"
-            style={{ left: `${hzToPercent(n.hz)}%`, transform: 'translateX(-50%)' }}
-          >
-            <div className="w-px h-2 bg-slate-300" />
-            <span className="text-[10px] text-slate-400 mt-0.5">{n.note}</span>
-          </div>
-        ))}
+        {NOTES.map(n => {
+          const notePercent = hzToPercent(n.hz)
+          const isInRange = notePercent >= range.left && notePercent <= (range.left + range.width)
+          return (
+            <div
+              key={n.note}
+              className="absolute flex flex-col items-center"
+              style={{ left: `${notePercent}%`, transform: 'translateX(-50%)' }}
+            >
+              <div className="w-px h-2 bg-slate-300" />
+              <span className={`text-[10px] font-medium mt-0.5 ${isInRange ? 'text-white' : 'text-slate-800'}`}>
+                {n.note}
+              </span>
+            </div>
+          )
+        })}
       </div>
     </div>
   )
