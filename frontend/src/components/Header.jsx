@@ -16,7 +16,7 @@ function Header({ onReset, showReset }) {
           </div>
           <div>
             <h1 className="font-display font-bold text-2xl text-slate-800">
-              Симпли
+              СИМПЛИ
             </h1>
             <p className="text-slate-500 text-sm">Анализ голоса</p>
           </div>
