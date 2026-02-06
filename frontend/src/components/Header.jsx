@@ -15,7 +15,7 @@ function Header({ onReset, showReset }) {
             <Mic2 className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="font-display font-bold text-2xl text-slate-800">
+            <h1 className="font-display font-bold text-2xl text-[#72AEF7]">
               СИМПЛИ
             </h1>
             <p className="text-slate-500 text-sm">Анализ голоса</p>
