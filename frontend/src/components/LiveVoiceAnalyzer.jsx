@@ -382,7 +382,14 @@ function LiveVoiceAnalyzer() {
 
   const handleFinish = async () => {
     stopRecording()
-    
+
+    // Проверка минимальной длительности записи
+    if (duration < 30) {
+      setError(`Запись слишком короткая. Нужно минимум 30 секунд для точного анализа. Ты записал только ${duration} секунд.`)
+      setShowResults(true)
+      return
+    }
+
     // Ждем завершения записи аудио
     if (mediaRecorderRef.current) {
       await new Promise((resolve) => {
@@ -394,7 +401,7 @@ function LiveVoiceAnalyzer() {
         }
       })
     }
-    
+
     // Отправляем на анализ
     await sendForAnalysis()
   }
@@ -686,10 +693,11 @@ function LiveVoiceAnalyzer() {
                         <strong>Как получить точный результат:</strong>
                       </p>
                       <ul className="text-slate-600 text-sm space-y-1">
-                        <li>🎤 Напой <strong>30-60 секунд</strong> любимую песню</li>
+                        <li>🎤 Напой <strong>минимум 30 секунд</strong> любимую песню</li>
                         <li>🎵 Выбери ту, которая хорошо у тебя получается</li>
                         <li>📢 Пой в полный голос, не стесняйся!</li>
                         <li>🔇 Найди тихое место без шума</li>
+                        <li>⏱️ <strong className="text-red-500">Минимум 30 секунд</strong> для точного анализа</li>
                       </ul>
                     </div>
                   </div>
@@ -867,16 +875,31 @@ function LiveVoiceAnalyzer() {
                   <span className="font-semibold">Начать петь</span>
                 </button>
               ) : (
-                <button
-                  onClick={() => {
-                      handleFinish()
-                      ymReachGoal('zakonchit_pet');
-                      }}
-                  className="flex items-center gap-3 px-8 py-4 rounded-[40px] bg-red-500 text-white hover:bg-red-600 transition-all pulse-record"
-                >
-                  <MicOff className="w-5 h-5" />
-                  <span className="font-semibold">Закончить ({duration}с)</span>
-                </button>
+                <div className="flex flex-col items-center gap-2">
+                  <button
+                    onClick={() => {
+                        handleFinish()
+                        ymReachGoal('zakonchit_pet');
+                        }}
+                    className={`flex items-center gap-3 px-8 py-4 rounded-[40px] transition-all pulse-record ${
+                      duration >= 30
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-orange-500 text-white hover:bg-orange-600'
+                    }`}
+                  >
+                    <MicOff className="w-5 h-5" />
+                    <span className="font-semibold">Закончить ({duration}с)</span>
+                  </button>
+                  {duration < 30 && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-xs text-orange-600 font-medium"
+                    >
+                      Ещё {30 - duration}с до минимума
+                    </motion.p>
+                  )}
+                </div>
               )}
             </div>
           </motion.div>

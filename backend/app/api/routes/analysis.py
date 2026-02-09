@@ -92,14 +92,23 @@ async def analyze_voice(
     try:
         import time
         start_time = time.time()
-        
+
         print(f"[ANALYSIS] 🎬 Начинаю анализ для сессии {session_id}")
-        
+
         # Load artist profiles from database
         print(f"[ANALYSIS] 📊 Загружаю профили артистов из БД...")
-        artists_result = await db.execute(select(ArtistProfile))
-        artist_profiles = artists_result.scalars().all()
-        print(f"[ANALYSIS] ✅ Загружено {len(artist_profiles)} артистов ({time.time() - start_time:.1f}s)")
+        try:
+            artists_result = await db.execute(select(ArtistProfile))
+            artist_profiles = artists_result.scalars().all()
+            print(f"[ANALYSIS] ✅ Загружено {len(artist_profiles)} артистов ({time.time() - start_time:.1f}s)")
+        except Exception as db_error:
+            logger.error(f"Database connection error: {db_error}")
+            # Попытка переподключения
+            await db.rollback()
+            await db.commit()
+            artists_result = await db.execute(select(ArtistProfile))
+            artist_profiles = artists_result.scalars().all()
+            print(f"[ANALYSIS] ✅ Загружено {len(artist_profiles)} артистов после переподключения ({time.time() - start_time:.1f}s)")
         
         artists_data = [
             {
@@ -117,11 +126,22 @@ async def analyze_voice(
         ]
         
         # Load songs from database
-        songs_result = await db.execute(
-            select(Song, ArtistProfile.name)
-            .join(ArtistProfile, Song.artist_id == ArtistProfile.id)
-        )
-        songs_with_artists = songs_result.all()
+        try:
+            songs_result = await db.execute(
+                select(Song, ArtistProfile.name)
+                .join(ArtistProfile, Song.artist_id == ArtistProfile.id)
+            )
+            songs_with_artists = songs_result.all()
+        except Exception as db_error:
+            logger.error(f"Database connection error while loading songs: {db_error}")
+            # Попытка переподключения
+            await db.rollback()
+            await db.commit()
+            songs_result = await db.execute(
+                select(Song, ArtistProfile.name)
+                .join(ArtistProfile, Song.artist_id == ArtistProfile.id)
+            )
+            songs_with_artists = songs_result.all()
         
         songs_data = [
             {

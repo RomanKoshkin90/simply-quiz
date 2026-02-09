@@ -17,6 +17,12 @@ engine = create_async_engine(
     echo=False,  # Set True for SQL debugging
     pool_size=5,
     max_overflow=10,
+    pool_pre_ping=True,  # Проверяет соединение перед использованием
+    pool_recycle=3600,  # Обновляет соединения каждый час (3600 секунд)
+    connect_args={
+        "server_settings": {"jit": "off"},  # Отключает JIT для стабильности
+        "command_timeout": 60,  # Таймаут команды 60 секунд
+    },
 )
 
 AsyncSessionLocal = async_sessionmaker(
