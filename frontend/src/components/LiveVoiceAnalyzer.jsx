@@ -869,7 +869,7 @@ function LiveVoiceAnalyzer() {
               ) : (
                 <button
                   onClick={() => {
-                      handleFinish
+                      handleFinish()
                       ymReachGoal('zakonchit_pet');
                       }}
                   className="flex items-center gap-3 px-8 py-4 rounded-[40px] bg-red-500 text-white hover:bg-red-600 transition-all pulse-record"
@@ -1048,7 +1048,6 @@ function LiveVoiceAnalyzer() {
                   e.preventDefault();
                   await sendToTelegram(formData);
                   setIsLocked(false);
-                  ymReachGoal('otpravka_formi_analiz');
                 }} className="w-full max-w-md mx-auto">
                   <div className="text-center mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
@@ -1088,6 +1087,9 @@ function LiveVoiceAnalyzer() {
                   <button
                     type="submit"
                     className="w-full mt-4 px-4 py-3 rounded-[40px] bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
+                    onClick={() => {
+                        ymReachGoal('otpravka_formi_analiz');
+                        }}
                   >
                     Отправить
                   </button>
