@@ -5,6 +5,7 @@ import Spectrogram from './Spectrogram'
 import ArtistCard from './ArtistCard'
 import SongCard from './SongCard'
 import { sendToTelegram } from '../utils/telegram'
+import { ymReachGoal } from '../hooks/useYandexMetrika'
 
 // Русские названия нот
 const NOTE_NAMES_RU = {
@@ -856,7 +857,10 @@ function LiveVoiceAnalyzer() {
             <div className="flex justify-center">
               {!isRecording ? (
                 <button
-                  onClick={startRecording}
+                  onClick={() => {
+                      startRecording
+                      ymReachGoal('nachat_pet');
+                      }}
                   className="flex items-center gap-3 px-8 py-4 rounded-[40px] btn-primary shadow-lg shadow-primary/20"
                 >
                   <Mic className="w-5 h-5" />
@@ -864,7 +868,10 @@ function LiveVoiceAnalyzer() {
                 </button>
               ) : (
                 <button
-                  onClick={handleFinish}
+                  onClick={() => {
+                      handleFinish
+                      ymReachGoal('zakonchit_pet');
+                      }}
                   className="flex items-center gap-3 px-8 py-4 rounded-[40px] bg-red-500 text-white hover:bg-red-600 transition-all pulse-record"
                 >
                   <MicOff className="w-5 h-5" />
@@ -1041,6 +1048,7 @@ function LiveVoiceAnalyzer() {
                   e.preventDefault();
                   await sendToTelegram(formData);
                   setIsLocked(false);
+                  ymReachGoal('otpravka_formi_analiz');
                 }} className="w-full max-w-md mx-auto">
                   <div className="text-center mb-6">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
