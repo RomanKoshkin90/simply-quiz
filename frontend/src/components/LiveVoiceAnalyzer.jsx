@@ -866,7 +866,7 @@ function LiveVoiceAnalyzer() {
               {!isRecording ? (
                 <button
                   onClick={() => {
-                      startRecording
+                      startRecording()
                       ymReachGoal('nachat_pet');
                       }}
                   className="flex items-center gap-3 px-8 py-4 rounded-[40px] btn-primary shadow-lg shadow-primary/20"
