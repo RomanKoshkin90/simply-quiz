@@ -381,14 +381,12 @@ function LiveVoiceAnalyzer() {
   }, [])
 
   const handleFinish = async () => {
-    stopRecording()
-
-    // Проверка минимальной длительности записи
+    // Дополнительная защита (кнопка уже disabled до 30 сек)
     if (duration < 30) {
-      setError(`Запись слишком короткая. Нужно минимум 30 секунд для точного анализа. Ты записал только ${duration} секунд.`)
-      setShowResults(true)
       return
     }
+
+    stopRecording()
 
     // Ждем завершения записи аудио
     if (mediaRecorderRef.current) {
@@ -881,22 +879,25 @@ function LiveVoiceAnalyzer() {
                         handleFinish()
                         ymReachGoal('zakonchit_pet');
                         }}
-                    className={`flex items-center gap-3 px-8 py-4 rounded-[40px] transition-all pulse-record ${
+                    disabled={duration < 30}
+                    className={`flex items-center gap-3 px-8 py-4 rounded-[40px] transition-all ${
                       duration >= 30
-                        ? 'bg-red-500 text-white hover:bg-red-600'
-                        : 'bg-orange-500 text-white hover:bg-orange-600'
+                        ? 'bg-red-500 text-white hover:bg-red-600 pulse-record cursor-pointer'
+                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     }`}
                   >
                     <MicOff className="w-5 h-5" />
-                    <span className="font-semibold">Закончить ({duration}с)</span>
+                    <span className="font-semibold">
+                      {duration >= 30 ? `Закончить (${duration}с)` : `Записываю... (${duration}с / минимум 30с)`}
+                    </span>
                   </button>
                   {duration < 30 && (
                     <motion.p
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-orange-600 font-medium"
+                      className="text-xs text-slate-600 font-medium"
                     >
-                      Ещё {30 - duration}с до минимума
+                      Ещё {30 - duration}с до возможности завершить
                     </motion.p>
                   )}
                 </div>
