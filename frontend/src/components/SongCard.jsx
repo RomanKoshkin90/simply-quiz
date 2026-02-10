@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Music, Star, ExternalLink, Headphones } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { ymReachGoal } from '../hooks/useYandexMetrika'
 
 function SongCard({ song, isLocked = false }) {
   if (!song) {
@@ -56,6 +57,7 @@ function SongCard({ song, isLocked = false }) {
                 href="https://simplyonline.ru/"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => ymReachGoal('zagruz_fail')}
               >
                 Научиться петь
               </a>
