@@ -54,7 +54,7 @@ function SongCard({ song, isLocked = false }) {
           <div className="flex gap-1 flex-shrink-0">
               <a
                 className="bg-[#72AEF7] rounded-[40px] p-2 text-sm text-white shadow-md shadow-primary/20"
-                href="https://simplyonline.ru/"
+                href="https://app.simplyonline.ru/teachers"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => ymReachGoal('zagruz_fail')}
