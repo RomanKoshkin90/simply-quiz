@@ -51,37 +51,14 @@ function SongCard({ song, isLocked = false }) {
           
           {/* Кнопки действий */}
           <div className="flex gap-1 flex-shrink-0">
-            {yandex_music_url && (
-              <>
-                <button
-                  onClick={() => setShowPlayer(!showPlayer)}
-                  className="p-1.5 rounded-[40px] hover:bg-white/80 transition-colors"
-                  title={showPlayer ? "Скрыть плеер" : "Послушать"}
-                >
-                  <Headphones className={`w-4 h-4 ${showPlayer ? 'text-primary' : 'text-slate-400'}`} />
-                </button>
-                <a
-                  href={yandex_music_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg hover:bg-white/80 transition-colors"
-                  title="Открыть в Яндекс Музыке"
-                >
-                  <ExternalLink className="w-4 h-4 text-slate-400 hover:text-primary" />
-                </a>
-              </>
-            )}
-            {!yandex_music_url && (
               <a
-                href={`https://music.yandex.ru/search?text=${encodeURIComponent(artist_name + ' ' + title)}`}
+                className="bg-[#72AEF7] rounded p-2 text-sm text-white"
+                href="https://simplyonline.ru/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-1.5 rounded-lg hover:bg-white/80 transition-colors text-xs text-slate-400 hover:text-primary"
-                title="Искать в Яндекс Музыке"
               >
-                <ExternalLink className="w-4 h-4" />
+                Научиться петь
               </a>
-            )}
           </div>
         </div>
       </div>
