@@ -52,7 +52,7 @@ function SongCard({ song, isLocked = false }) {
           {/* Кнопки действий */}
           <div className="flex gap-1 flex-shrink-0">
               <a
-                className="bg-[#72AEF7] rounded p-2 text-sm text-white"
+                className="bg-[#72AEF7] rounded-[40px] p-2 text-sm text-white shadow-md shadow-primary/20"
                 href="https://simplyonline.ru/"
                 target="_blank"
                 rel="noopener noreferrer"
