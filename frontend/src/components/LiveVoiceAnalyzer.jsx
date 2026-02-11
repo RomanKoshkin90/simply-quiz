@@ -23,10 +23,10 @@ const hzToNote = (frequency) => {
   const noteIndex = ((totalSemitones % 12) + 12) % 12
   const note = notes[noteIndex]
   const noteRu = NOTE_NAMES_RU[note]
-  return { 
-    note, 
-    noteRu, 
-    octave: String(octave), 
+  return {
+    note,
+    noteRu,
+    octave: String(octave),
     full: `${note}${octave}`,
     fullRu: `${noteRu}${octave}`
   }
@@ -35,13 +35,13 @@ const hzToNote = (frequency) => {
 // Определение типа голоса по диапазону
 const detectVoiceType = (minHz, maxHz) => {
   const medianHz = (minHz + maxHz) / 2
-  
-  if (medianHz < 130) return { type: 'bass', name: 'Бас', desc: 'Самый низкий мужской голос' }
-  if (medianHz < 165) return { type: 'baritone', name: 'Баритон', desc: 'Средний мужской голос' }
-  if (medianHz < 260) return { type: 'tenor', name: 'Тенор', desc: 'Высокий мужской голос' }
-  if (medianHz < 350) return { type: 'alto', name: 'Альт', desc: 'Низкий женский голос' }
-  if (medianHz < 440) return { type: 'mezzo-soprano', name: 'Меццо-сопрано', desc: 'Средний женский голос' }
-  return { type: 'soprano', name: 'Сопрано', desc: 'Высокий женский голос' }
+
+  if (medianHz < 130) return { type: 'bass', name: 'Бас', desc: 'Самый низкий голос' }
+  if (medianHz < 165) return { type: 'baritone', name: 'Баритон', desc: 'Средний низкий голос' }
+  if (medianHz < 260) return { type: 'tenor', name: 'Тенор', desc: 'Высокий голос' }
+  if (medianHz < 350) return { type: 'alto', name: 'Альт', desc: 'Низкий высокий голос' }
+  if (medianHz < 440) return { type: 'mezzo-soprano', name: 'Меццо-сопрано', desc: 'Средний высокий голос' }
+  return { type: 'soprano', name: 'Сопрано', desc: 'Самый высокий голос' }
 }
 
 // Оценка тембра на основе записи
@@ -49,7 +49,7 @@ const analyzeTimbr = (stats) => {
   // Упрощённый анализ на основе диапазона и стабильности
   const range = stats.max - stats.min
   const octaves = Math.log2(stats.max / stats.min)
-  
+
   return {
     brightness: Math.min(100, (stats.max / 700) * 100), // Чем выше макс частота, тем ярче
     stability: Math.min(100, Math.max(0, 100 - (range / 10))), // Чем меньше разброс, тем стабильнее
@@ -65,12 +65,12 @@ class MedianFilter {
     this.size = size
     this.buffer = []
   }
-  
+
   push(value) {
     this.buffer.push(value)
     if (this.buffer.length > this.size) this.buffer.shift()
   }
-  
+
   get() {
     if (this.buffer.length === 0) return 0
     const sorted = [...this.buffer].sort((a, b) => a - b)
@@ -86,7 +86,7 @@ class ExponentialSmoothing {
     this.value = 0
     this.initialized = false
   }
-  
+
   update(newValue) {
     if (!this.initialized) {
       this.value = newValue
@@ -96,7 +96,7 @@ class ExponentialSmoothing {
     }
     return this.value
   }
-  
+
   reset() {
     this.value = 0
     this.initialized = false
@@ -117,7 +117,7 @@ function LiveVoiceAnalyzer() {
   const [error, setError] = useState(null)
   const [analysisStage, setAnalysisStage] = useState('')
   const [analysisProgress, setAnalysisProgress] = useState(0)
-  
+
   const audioContextRef = useRef(null)
   const analyserRef = useRef(null)
   const mediaStreamRef = useRef(null)
@@ -126,7 +126,7 @@ function LiveVoiceAnalyzer() {
   const animationFrameRef = useRef(null)
   const startTimeRef = useRef(null)
   const durationIntervalRef = useRef(null)
-  
+
   const medianFilterRef = useRef(new MedianFilter(7))
   const smootherRef = useRef(new ExponentialSmoothing(0.15))
   const frequencyHistoryRef = useRef([])
@@ -137,12 +137,12 @@ function LiveVoiceAnalyzer() {
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-        } 
+        }
       })
       mediaStreamRef.current = stream
 
@@ -159,7 +159,7 @@ function LiveVoiceAnalyzer() {
 
       // Записываем аудио для отправки на бэкенд
       audioChunksRef.current = []
-      
+
       // Проверяем поддерживаемые форматы
       let mimeType = 'audio/webm;codecs=opus'
       if (!MediaRecorder.isTypeSupported(mimeType)) {
@@ -171,21 +171,21 @@ function LiveVoiceAnalyzer() {
           }
         }
       }
-      
+
       const options = mimeType ? { mimeType } : {}
       const mediaRecorder = new MediaRecorder(stream, options)
       mediaRecorderRef.current = mediaRecorder
-      
+
       mediaRecorder.ondataavailable = (event) => {
         if (event.data && event.data.size > 0) {
           audioChunksRef.current.push(event.data)
         }
       }
-      
+
       mediaRecorder.onerror = (event) => {
         console.error('MediaRecorder error:', event)
       }
-      
+
       try {
         mediaRecorder.start(100) // Записываем чанки каждые 100мс
       } catch (err) {
@@ -203,13 +203,13 @@ function LiveVoiceAnalyzer() {
       setError(null)
       setAnalysisData(null)
       startTimeRef.current = Date.now()
-      
+
       durationIntervalRef.current = setInterval(() => {
         if (startTimeRef.current) {
           setDuration(Math.floor((Date.now() - startTimeRef.current) / 1000))
         }
       }, 1000)
-      
+
       detectPitch()
     } catch (err) {
       console.error('Ошибка микрофона:', err)
@@ -223,13 +223,13 @@ function LiveVoiceAnalyzer() {
     const bufferLength = analyserRef.current.fftSize
     const buffer = new Float32Array(bufferLength)
     const sampleRate = audioContextRef.current.sampleRate
-    
+
     let lastUpdate = 0
     const UPDATE_INTERVAL = 50
 
     const analyze = (timestamp) => {
       if (!analyserRef.current) return
-      
+
       if (timestamp - lastUpdate < UPDATE_INTERVAL) {
         animationFrameRef.current = requestAnimationFrame(analyze)
         return
@@ -238,29 +238,29 @@ function LiveVoiceAnalyzer() {
 
       analyserRef.current.getFloatTimeDomainData(buffer)
       const rawFrequency = autoCorrelate(buffer, sampleRate)
-      
+
       if (rawFrequency > 70 && rawFrequency < 1000) {
         const history = frequencyHistoryRef.current
         history.push(rawFrequency)
         if (history.length > 5) history.shift()
-        
+
         medianFilterRef.current.push(rawFrequency)
         const medianFiltered = medianFilterRef.current.get()
         const smoothed = smootherRef.current.update(medianFiltered)
-        
+
         // Обновляем статистику
         setStats(prev => {
           const newValidSamples = prev.validSamples + 1
-          
+
           // Игнорируем первые 2 валидных сэмпла чтобы избежать ложных высоких значений
           // Также проверяем что частота разумная (не выше 600 Hz для вокала)
           const isValidSample = newValidSamples >= 2 && smoothed < 600 && smoothed > 70
-          
+
           if (isValidSample) {
             // Показываем частоту только если она валидная
             setCurrentFrequency(rawFrequency)
             setSmoothedFrequency(smoothed)
-            
+
             return {
               min: Math.min(prev.min === Infinity ? smoothed : prev.min, smoothed),
               max: Math.max(prev.max === 0 ? smoothed : prev.max, smoothed),
@@ -285,18 +285,18 @@ function LiveVoiceAnalyzer() {
   const autoCorrelate = (buffer, sampleRate) => {
     const size = buffer.length
     const halfSize = Math.floor(size / 2)
-    
+
     // Вычисляем RMS (Root Mean Square) для определения уровня сигнала
     let rms = 0
     for (let i = 0; i < size; i += 4) {
       rms += buffer[i] * buffer[i]
     }
     rms = Math.sqrt(rms / (size / 4))
-    
+
     // Увеличиваем порог для тишины и добавляем проверку на стабильность
     // 0.01 вместо 0.005 - более строгая фильтрация шума
     if (rms < 0.01) return -1
-    
+
     // Дополнительная проверка: если сигнал слишком слабый или нестабильный
     // Проверяем разброс значений (variance)
     let variance = 0
@@ -309,7 +309,7 @@ function LiveVoiceAnalyzer() {
       variance += (buffer[i] - mean) ** 2
     }
     variance /= (size / 4)
-    
+
     // Если сигнал слишком стабильный (низкая variance), это скорее всего шум, а не голос
     if (variance < 0.0001) return -1
 
@@ -373,7 +373,7 @@ function LiveVoiceAnalyzer() {
 
   const handleFinish = async () => {
     stopRecording()
-    
+
     // Ждем завершения записи аудио
     if (mediaRecorderRef.current) {
       await new Promise((resolve) => {
@@ -385,7 +385,7 @@ function LiveVoiceAnalyzer() {
         }
       })
     }
-    
+
     // Отправляем на анализ
     await sendForAnalysis()
   }
@@ -406,65 +406,65 @@ function LiveVoiceAnalyzer() {
       // Определяем тип файла
       const mimeType = mediaRecorderRef.current?.mimeType || 'audio/webm'
       const extension = mimeType.includes('mp4') ? 'm4a' : mimeType.includes('webm') ? 'webm' : 'wav'
-      
+
       // Создаем Blob из записанных чанков
       const audioBlob = new Blob(audioChunksRef.current, { type: mimeType })
-      
+
       // Проверяем размер
       if (audioBlob.size === 0) {
         throw new Error('Записанный файл пуст')
       }
-      
+
       setAnalysisStage('Загрузка аудио...')
       setAnalysisProgress(20)
-      
+
       const formData = new FormData()
       formData.append('file', audioBlob, `recording.${extension}`)
-      
+
       // Загружаем аудио
       const uploadRes = await fetch(`${API_BASE}/upload-audio`, {
         method: 'POST',
         body: formData,
       })
-      
+
       if (!uploadRes.ok) {
         const err = await uploadRes.json()
         throw new Error(err.detail || 'Ошибка загрузки аудио')
       }
-      
+
       const uploadData = await uploadRes.json()
-      
+
       setAnalysisStage('Анализ тона голоса...')
       setAnalysisProgress(40)
-      
+
       // Запускаем анализ
       const analysisRes = await fetch(
         `${API_BASE}/analyze-voice?session_id=${uploadData.session_id}`,
         { method: 'POST' }
       )
-      
+
       setAnalysisStage('Извлечение тембра...')
       setAnalysisProgress(60)
-      
+
       if (!analysisRes.ok) {
         const err = await analysisRes.json()
         throw new Error(err.detail || 'Ошибка анализа')
       }
-      
+
       setAnalysisStage('Поиск похожих артистов...')
       setAnalysisProgress(80)
-      
+
       const result = await analysisRes.json()
-      
+
       setAnalysisStage('Готово!')
       setAnalysisProgress(100)
-      
+
       // Небольшая задержка перед показом результатов
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       setAnalysisData(result)
       setShowResults(true)
-      
+
     } catch (err) {
       console.error('Ошибка анализа:', err)
       setError(err.message)
@@ -496,7 +496,7 @@ function LiveVoiceAnalyzer() {
   const maxNote = useMemo(() => hzToNote(stats.max), [stats.max])
   const voiceType = useMemo(() => detectVoiceType(stats.min, stats.max), [stats.min, stats.max])
   const timbre = useMemo(() => analyzeTimbr(stats), [stats])
-  
+
   const needleRotation = useMemo(() => {
     if (displayFrequency <= 0) return -90
     const minLog = Math.log2(70)
@@ -512,35 +512,35 @@ function LiveVoiceAnalyzer() {
 
   // Пояснения для тембра
   const timbreExplanations = {
-    brightness: { 
-      label: 'Яркость голоса', 
-      low: 'Мягкий, бархатный тембр', 
+    brightness: {
+      label: 'Яркость голоса',
+      low: 'Мягкий, бархатный тембр',
       mid: 'Сбалансированный, приятный тембр',
-      high: 'Звонкий, пронзительный голос' 
+      high: 'Звонкий, пронзительный голос'
     },
-    stability: { 
-      label: 'Стабильность', 
-      low: 'Голос "плавает", требует работы', 
+    stability: {
+      label: 'Стабильность',
+      low: 'Голос "плавает", требует работы',
       mid: 'Хорошая стабильность',
-      high: 'Отличный контроль голоса!' 
+      high: 'Отличный контроль голоса!'
     },
-    power: { 
-      label: 'Сила подачи', 
-      low: 'Тихое пение, больше уверенности!', 
+    power: {
+      label: 'Сила подачи',
+      low: 'Тихое пение, больше уверенности!',
       mid: 'Хорошая громкость',
-      high: 'Мощный, уверенный голос!' 
+      high: 'Мощный, уверенный голос!'
     },
-    range: { 
-      label: 'Диапазон', 
-      low: 'Узкий диапазон (до 1 октавы)', 
+    range: {
+      label: 'Диапазон',
+      low: 'Узкий диапазон (до 1 октавы)',
       mid: 'Средний диапазон (1-2 октавы)',
-      high: 'Широкий диапазон (2+ октавы)' 
+      high: 'Широкий диапазон (2+ октавы)'
     },
-    warmth: { 
-      label: 'Теплота', 
-      low: 'Холодный, высокий тембр', 
+    warmth: {
+      label: 'Теплота',
+      low: 'Холодный, высокий тембр',
       mid: 'Нейтральный тембр',
-      high: 'Тёплый, глубокий тембр' 
+      high: 'Тёплый, глубокий тембр'
     },
   }
 
@@ -590,7 +590,7 @@ function LiveVoiceAnalyzer() {
                 <Activity className="w-10 h-10 text-primary" />
               </div>
             </div>
-            
+
             {/* Текущий этап */}
             <motion.p
               key={analysisStage}
@@ -600,7 +600,7 @@ function LiveVoiceAnalyzer() {
             >
               {analysisStage || 'Загрузка...'}
             </motion.p>
-            
+
             {/* Прогресс бар */}
             <div className="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden">
               <motion.div
@@ -610,12 +610,12 @@ function LiveVoiceAnalyzer() {
                 className="h-full bg-gradient-to-r from-primary to-accent rounded-full"
               />
             </div>
-            
+
             {/* Процент */}
             <p className="text-sm text-slate-500 text-center mb-6">
               {analysisProgress}%
             </p>
-            
+
             {/* Список этапов */}
             <div className="space-y-2">
               {[
@@ -631,9 +631,8 @@ function LiveVoiceAnalyzer() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.1 }}
-                  className={`flex items-center gap-2 text-sm ${
-                    analysisProgress >= stage.threshold ? 'text-primary' : 'text-slate-400'
-                  }`}
+                  className={`flex items-center gap-2 text-sm ${analysisProgress >= stage.threshold ? 'text-primary' : 'text-slate-400'
+                    }`}
                 >
                   {analysisProgress >= stage.threshold ? (
                     <motion.div
@@ -691,7 +690,7 @@ function LiveVoiceAnalyzer() {
             {/* Спидометр и шкала */}
             <div className="flex gap-4 items-center justify-center mb-4">
               {isRecording && (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="flex flex-col justify-between h-48 py-2"
@@ -700,20 +699,18 @@ function LiveVoiceAnalyzer() {
                     const isNear = displayFrequency > 0 && Math.abs(displayFrequency - hz) < 50
                     return (
                       <div key={hz} className="flex items-center gap-2">
-                        <div className={`text-xs transition-all ${
-                          isNear ? 'text-primary font-semibold text-sm' : 'text-slate-400'
-                        }`}>
+                        <div className={`text-xs transition-all ${isNear ? 'text-primary font-semibold text-sm' : 'text-slate-400'
+                          }`}>
                           {hz}
                         </div>
-                        <div className={`h-px transition-all ${
-                          isNear ? 'w-3 bg-primary' : 'w-2 bg-slate-300'
-                        }`} />
+                        <div className={`h-px transition-all ${isNear ? 'w-3 bg-primary' : 'w-2 bg-slate-300'
+                          }`} />
                       </div>
                     )
                   })}
                 </motion.div>
               )}
-              
+
               <div className="relative w-full max-w-xs">
                 <svg viewBox="0 0 200 120" className="w-full">
                   <defs>
@@ -722,7 +719,7 @@ function LiveVoiceAnalyzer() {
                       <stop offset="100%" stopColor="#06b6d4" />
                     </linearGradient>
                   </defs>
-                  
+
                   <path
                     d="M 20 100 A 80 80 0 0 1 180 100"
                     fill="none"
@@ -730,7 +727,7 @@ function LiveVoiceAnalyzer() {
                     strokeWidth="10"
                     strokeLinecap="round"
                   />
-                  
+
                   {isRecording && displayFrequency > 0 && (
                     <motion.path
                       d="M 20 100 A 80 80 0 0 1 180 100"
@@ -742,8 +739,8 @@ function LiveVoiceAnalyzer() {
                       transition={{ duration: 0.2, ease: "easeOut" }}
                     />
                   )}
-                  
-                  <motion.g 
+
+                  <motion.g
                     animate={{ rotate: needleRotation }}
                     transition={{ type: "spring", stiffness: 100, damping: 20 }}
                     style={{ originX: "100px", originY: "100px" }}
@@ -757,7 +754,7 @@ function LiveVoiceAnalyzer() {
                     />
                     <circle cx="100" cy="100" r="6" fill={isRecording ? '#0ea5e9' : '#94a3b8'} />
                   </motion.g>
-                  
+
                   {[
                     { label: '70', freq: 70 },
                     { label: 'Ре3', freq: 130 },
@@ -791,7 +788,7 @@ function LiveVoiceAnalyzer() {
                           {currentNote.noteRu}
                           <span className="text-xl text-primary/70">{currentNote.octave}</span>
                         </div>
-                        <motion.div 
+                        <motion.div
                           className="text-primary text-lg font-semibold"
                           animate={{ opacity: [0.6, 1, 0.6] }}
                           transition={{ duration: 1.5, repeat: Infinity }}
@@ -934,7 +931,7 @@ function LiveVoiceAnalyzer() {
                 {stats.validSamples > 10 && (
                   <motion.div
                     initial={{ width: 0 }}
-                    animate={{ 
+                    animate={{
                       width: `${Math.min(100, octaveRange * 25)}%`,
                       left: `${Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100)}%`
                     }}

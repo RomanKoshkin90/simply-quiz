@@ -385,7 +385,10 @@ class SimilarityEngine:
         # Sort by match score
         matches.sort(key=lambda x: x.pitch_match_score, reverse=True)
         
-        return matches[:top_n]
+        # Фильтруем: только песни с совпадением > 50%
+        filtered = [m for m in matches if m.pitch_match_score > 50]
+        
+        return filtered[:top_n]
 
 
 # Module-level instance
