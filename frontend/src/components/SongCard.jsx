@@ -57,7 +57,7 @@ function SongCard({ song, isLocked = false }) {
                 href="https://app.simplyonline.ru/teachers"
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => ymReachGoal('zagruz_fail')}
+                onClick={() => ymReachGoal('nauchitsia_pet')}
               >
                 Научиться петь
               </a>
