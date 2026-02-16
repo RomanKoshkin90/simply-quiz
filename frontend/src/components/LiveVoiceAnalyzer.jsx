@@ -381,8 +381,8 @@ function LiveVoiceAnalyzer() {
   }, [])
 
   const handleFinish = async () => {
-    // Дополнительная защита (кнопка уже disabled до 30 сек)
-    if (duration < 30) {
+    // Дополнительная защита (кнопка уже disabled до 15 сек)
+    if (duration < 15) {
       return
     }
 
@@ -691,7 +691,7 @@ function LiveVoiceAnalyzer() {
                         <strong>Как получить точный результат:</strong>
                       </p>
                       <ul className="text-slate-600 text-sm space-y-1">
-                        <li>🎤 Напой <strong>минимум 30 секунд</strong> любимую песню</li>
+                        <li>🎤 Напой <strong>минимум 15 секунд</strong> любимую песню</li>
                         <li>🎵 Выбери ту, которая хорошо у тебя получается</li>
                         <li>📢 Пой в полный голос, не стесняйся!</li>
                         <li>🔇 Найди тихое место без шума</li>
@@ -879,25 +879,25 @@ function LiveVoiceAnalyzer() {
                         handleFinish()
                         ymReachGoal('zakonchit_pet');
                         }}
-                    disabled={duration < 30}
+                    disabled={duration < 15}
                     className={`flex items-center gap-3 px-8 py-4 rounded-[40px] transition-all ${
-                      duration >= 30
+                      duration >= 15
                         ? 'bg-red-500 text-white hover:bg-red-600 pulse-record cursor-pointer'
                         : 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     }`}
                   >
                     <MicOff className="w-5 h-5" />
                     <span className="font-semibold">
-                      {duration >= 30 ? `Закончить (${duration}с)` : `Записываю... (${duration}с / минимум 30с)`}
+                      {duration >= 15 ? `Закончить (${duration}с)` : `Записываю... (${duration}с / минимум 15с)`}
                     </span>
                   </button>
-                  {duration < 30 && (
+                  {duration < 15 && (
                     <motion.p
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                       className="text-xs text-slate-600 font-medium"
                     >
-                      Ещё {30 - duration}с до возможности завершить
+                      Ещё {15 - duration}с до возможности завершить
                     </motion.p>
                   )}
                 </div>
