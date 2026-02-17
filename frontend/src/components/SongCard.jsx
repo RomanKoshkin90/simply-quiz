@@ -18,6 +18,19 @@ function SongCard({ song, isLocked = false }) {
   } = song
   const [showPlayer, setShowPlayer] = useState(false)
 
+  // Определяем, на каком сайте мы находимся
+  const isLandingPage = typeof window !== 'undefined' &&
+    window.location.hostname === 'simplyonline.ru'
+
+  // Если на лендинге - ведем на платформу, иначе - на лендинг
+  const buttonUrl = isLandingPage
+    ? 'https://app.simplyonline.ru/teachers'
+    : 'https://simplyonline.ru'
+
+  const buttonMetric = isLandingPage
+    ? 'nauchitsia_pet'
+    : 'perehod_na_lending'
+
   return (
     <div className="group rounded-xl bg-slate-50/80 backdrop-blur-md hover:bg-slate-100/80 transition-colors overflow-hidden relative">
       <div className={`p-3 ${isLocked ? 'blur-md pointer-events-none' : ''}`}>
@@ -54,10 +67,10 @@ function SongCard({ song, isLocked = false }) {
           <div className="flex gap-1 flex-shrink-0">
               <a
                 className="bg-[#72AEF7] rounded-[40px] p-2 text-sm text-white shadow-md shadow-primary/20"
-                href="https://app.simplyonline.ru/teachers"
+                href={buttonUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => ymReachGoal('nauchitsia_pet')}
+                onClick={() => ymReachGoal(buttonMetric)}
               >
                 Научиться петь
               </a>
