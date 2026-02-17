@@ -18,16 +18,16 @@ function SongCard({ song, isLocked = false }) {
   } = song
   const [showPlayer, setShowPlayer] = useState(false)
 
-  // Определяем, на каком сайте мы находимся
-  const isLandingPage = typeof window !== 'undefined' &&
-    window.location.hostname === 'simplyonline.ru'
+  // Определяем, находимся ли мы в iframe (попап на лендинге)
+  const isInIframe = typeof window !== 'undefined' && window.self !== window.top
 
-  // Если на лендинге - ведем на платформу, иначе - на лендинг
-  const buttonUrl = isLandingPage
+  // Если в iframe (попап на лендинге) - ведем на платформу
+  // Если НЕ в iframe (основная страница квиза) - ведем на лендинг
+  const buttonUrl = isInIframe
     ? 'https://app.simplyonline.ru/teachers'
     : 'https://simplyonline.ru'
 
-  const buttonMetric = isLandingPage
+  const buttonMetric = isInIframe
     ? 'nauchitsia_pet'
     : 'perehod_na_lending'
 
