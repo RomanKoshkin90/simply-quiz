@@ -3,14 +3,6 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  optimizeDeps: {
-    include: ['framer-motion'],
-  },
-  build: {
-    commonjsOptions: {
-      include: [/framer-motion/, /node_modules/],
-    },
-  },
   server: {
     host: '0.0.0.0',  // Позволяет доступ из локальной сети
     port: 5173,  // Стандартный порт Vite
