@@ -52,6 +52,7 @@ function AnalysisResults({ data }) {
   const maxNoteRu = toRussianNote(pitch_analysis.max_pitch_note)
 
   const [isLocked, setIsLocked] = useState(true)
+  const [formSubmitted, setFormSubmitted] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -182,66 +183,100 @@ function AnalysisResults({ data }) {
           <div className="relative">
             {/* Форма разблокировки */}
             <AnimatePresence>
-              {isLocked && (
+              {(isLocked || formSubmitted) && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   className="absolute inset-0 z-10 flex items-center justify-center bg-white/40 backdrop-blur-md rounded-xl p-6"
                 >
-                  <form onSubmit={async (e) => {
-                    e.preventDefault();
-                    await sendToTelegram(formData);
-                    setIsLocked(false);
-                  }} className="w-full max-w-md">
-                    <div className="text-center mb-6">
-                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                        <Lock className="w-8 h-8 text-primary" />
+                  {isLocked ? (
+                    <form onSubmit={async (e) => {
+                      e.preventDefault();
+                      await sendToTelegram(formData);
+                      setIsLocked(false);
+                      setFormSubmitted(true);
+                    }} className="w-full max-w-md">
+                      <div className="text-center mb-6">
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                          <Lock className="w-8 h-8 text-primary" />
+                        </div>
+                        <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
+                        <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен к похожим артистам и к подборке песен</p>
                       </div>
-                      <h3 className="font-semibold text-slate-800 text-lg mb-2">Открыть рекомендации</h3>
-                      <p className="text-sm text-slate-500">Заполни форму для доступа к подборке песен к похожим артистам и к подборке песен</p>
-                    </div>
 
-                    <div className="space-y-3">
-                      <input
-                        type="text"
-                        placeholder="Имя"
-                        required
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
-                      />
-                      <input
-                        type="tel"
-                        placeholder="Телефон"
-                        required
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
-                      />
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        required
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
-                      />
-                    </div>
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          placeholder="Имя"
+                          required
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                        />
+                        <input
+                          type="tel"
+                          placeholder="Телефон"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                          className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                        />
+                        <input
+                          type="email"
+                          placeholder="Email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm bg-white"
+                        />
+                      </div>
 
-                    <button
-                      type="submit"
-                      className="w-full mt-4 px-4 py-3 rounded-[40px] bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
-                    >
-                      Открыть
-                    </button>
-                    <p className="text-xs text-slate-500 text-center mt-3">
-                      Нажимая на кнопку «Открыть», я даю согласие на обработку{' '}
-                      <a href="#" className="text-primary hover:underline">Персональных данных</a>
-                      {' '}и принимаю условия{' '}
-                      <a href="#" className="text-primary hover:underline">Пользовательского соглашения</a>
-                    </p>
-                  </form>
+                      <button
+                        type="submit"
+                        className="w-full mt-4 px-4 py-3 rounded-[40px] bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20"
+                      >
+                        Открыть
+                      </button>
+                      <p className="text-xs text-slate-500 text-center mt-3">
+                        Нажимая на кнопку «Открыть», я даю согласие на обработку{' '}
+                        <a href="#" className="text-primary hover:underline">Персональных данных</a>
+                        {' '}и принимаю условия{' '}
+                        <a href="#" className="text-primary hover:underline">Пользовательского соглашения</a>
+                      </p>
+                    </form>
+                  ) : (
+                    <div className="w-full max-w-md">
+                      <div className="text-center mb-6">
+                        <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                          <User className="w-8 h-8 text-primary" />
+                        </div>
+                        <h3 className="font-semibold text-slate-800 text-lg mb-2">
+                          Запишитесь на первую онлайн-консультацию со скидкой 55%
+                        </h3>
+                        <p className="text-sm text-slate-500">
+                          Анализ от ИИ помогает увидеть общую картину. Однако по-настоящему качественно и профессионально оценить ваш голос, а также дать точные рекомендации и персональные советы может только опытный преподаватель.
+                        </p>
+                      </div>
+
+                      <a
+                        href="https://app.simplyonline.ru/teachers"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block w-full px-4 py-3 rounded-[40px] bg-primary text-white font-medium text-sm hover:bg-primary/90 transition-colors shadow-md shadow-primary/20 text-center"
+                        onClick={() => setFormSubmitted(false)}
+                      >
+                        Записаться
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => setFormSubmitted(false)}
+                        className="w-full mt-3 text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        Пропустить
+                      </button>
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
