@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useSpring } from 'framer-motion'
 import { Mic, MicOff, RotateCcw, Mic2, Activity, Gauge, Music, Info, AlertCircle, User, Lock } from 'lucide-react'
 import Spectrogram from './Spectrogram'
 import ArtistCard from './ArtistCard'
@@ -139,9 +139,23 @@ function LiveVoiceAnalyzer() {
   const medianFilterRef = useRef(new MedianFilter(7))
   const smootherRef = useRef(new ExponentialSmoothing(0.15))
   const frequencyHistoryRef = useRef([])
+  const needleRef = useRef(null)
+  const springRotation = useSpring(-90, { stiffness: 100, damping: 20 })
 
   useEffect(() => {
     return () => stopRecording()
+  }, [])
+
+  useEffect(() => {
+    springRotation.set(needleRotation)
+  }, [needleRotation])
+
+  useEffect(() => {
+    return springRotation.on('change', (value) => {
+      if (needleRef.current) {
+        needleRef.current.setAttribute('transform', `rotate(${value}, 100, 100)`)
+      }
+    })
   }, [])
 
 
@@ -758,20 +772,15 @@ function LiveVoiceAnalyzer() {
                     />
                   )}
                   
-                  <motion.g 
-                    animate={{ rotate: needleRotation }}
-                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                    style={{ originX: "100px", originY: "100px" }}
-                  >
+                  <g ref={needleRef}>
                     <line
                       x1="100" y1="100" x2="100" y2="35"
                       stroke={isRecording ? '#72AEF7' : '#94a3b8'}
                       strokeWidth="3"
                       strokeLinecap="round"
-                      transform="rotate(0 100 100)"
                     />
                     <circle cx="100" cy="100" r="6" fill={isRecording ? '#72AEF7' : '#94a3b8'} />
-                  </motion.g>
+                  </g>
                   
                   {[
                     { label: '70', freq: 70 },
