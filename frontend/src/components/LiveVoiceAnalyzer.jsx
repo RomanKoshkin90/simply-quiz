@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { motion, AnimatePresence, useSpring } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Mic, MicOff, RotateCcw, Mic2, Activity, Gauge, Music, Info, AlertCircle, User, Lock } from 'lucide-react'
 import Spectrogram from './Spectrogram'
 import ArtistCard from './ArtistCard'
@@ -140,23 +140,19 @@ function LiveVoiceAnalyzer() {
   const smootherRef = useRef(new ExponentialSmoothing(0.15))
   const frequencyHistoryRef = useRef([])
   const needleRef = useRef(null)
-  const springRotation = useSpring(-90, { stiffness: 100, damping: 20 })
 
   useEffect(() => {
     return () => stopRecording()
   }, [])
 
   useEffect(() => {
-    springRotation.set(needleRotation)
+    if (!needleRef.current) return
+    // viewBox="-10 -10 220 135", точка (100,100) в SVG = (50%, 81.48%) в view-box
+    needleRef.current.style.transformBox = 'view-box'
+    needleRef.current.style.transformOrigin = '50% 81.48%'
+    needleRef.current.style.transition = 'transform 0.4s ease-out'
+    needleRef.current.style.transform = `rotate(${needleRotation}deg)`
   }, [needleRotation])
-
-  useEffect(() => {
-    return springRotation.on('change', (value) => {
-      if (needleRef.current) {
-        needleRef.current.setAttribute('transform', `rotate(${value}, 100, 100)`)
-      }
-    })
-  }, [])
 
 
   const startRecording = async () => {
