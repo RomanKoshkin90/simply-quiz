@@ -729,7 +729,7 @@ function LiveVoiceAnalyzer() {
               )}
               
               <div className="relative w-full max-w-xs">
-                <svg viewBox="-10 -10 220 135" className="w-full">
+                <svg viewBox="-10 -10 220 150" className="w-full">
                   <defs>
                     <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
                       <stop offset="0%" stopColor="#72AEF7" />
@@ -759,7 +759,7 @@ function LiveVoiceAnalyzer() {
                   
                   <g style={{
                     transformBox: 'view-box',
-                    transformOrigin: '50% 81.48%',
+                    transformOrigin: '50% 73.33%',
                     transition: 'transform 0.4s ease-out',
                     transform: `rotate(${needleRotation}deg)`,
                   }}>
