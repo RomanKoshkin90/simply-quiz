@@ -139,20 +139,9 @@ function LiveVoiceAnalyzer() {
   const medianFilterRef = useRef(new MedianFilter(7))
   const smootherRef = useRef(new ExponentialSmoothing(0.15))
   const frequencyHistoryRef = useRef([])
-  const needleRef = useRef(null)
-
   useEffect(() => {
     return () => stopRecording()
   }, [])
-
-  useEffect(() => {
-    if (!needleRef.current) return
-    // viewBox="-10 -10 220 135", точка (100,100) в SVG = (50%, 81.48%) в view-box
-    needleRef.current.style.transformBox = 'view-box'
-    needleRef.current.style.transformOrigin = '50% 81.48%'
-    needleRef.current.style.transition = 'transform 0.4s ease-out'
-    needleRef.current.style.transform = `rotate(${needleRotation}deg)`
-  }, [needleRotation])
 
 
   const startRecording = async () => {
@@ -768,7 +757,12 @@ function LiveVoiceAnalyzer() {
                     />
                   )}
                   
-                  <g ref={needleRef}>
+                  <g style={{
+                    transformBox: 'view-box',
+                    transformOrigin: '50% 81.48%',
+                    transition: 'transform 0.4s ease-out',
+                    transform: `rotate(${needleRotation}deg)`,
+                  }}>
                     <line
                       x1="100" y1="100" x2="100" y2="35"
                       stroke={isRecording ? '#72AEF7' : '#94a3b8'}
