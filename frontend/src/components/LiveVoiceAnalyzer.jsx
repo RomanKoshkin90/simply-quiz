@@ -904,63 +904,6 @@ function LiveVoiceAnalyzer() {
               </div>
             )}
 
-            {/* Диапазон визуализация */}
-            {isRecording && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white rounded-2xl p-5 border border-slate-100 mb-6"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <Activity className="w-4 h-4 text-primary" />
-                <h3 className="font-semibold text-slate-800">Твой вокальный диапазон</h3>
-              </div>
-              <div className="relative h-12 bg-slate-100 rounded-lg">
-                {/* Шкала - черные ноты */}
-                <div className="absolute inset-0 flex items-center justify-between px-4 text-xs text-slate-800 font-medium pointer-events-none">
-                  <span>До2</span>
-                  <span>До3</span>
-                  <span>До4</span>
-                  <span>До5</span>
-                  <span>До6</span>
-                </div>
-                {/* Твой диапазон с белыми нотами */}
-                {stats.validSamples > 10 && (
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{
-                      width: `${Math.min(100, octaveRange * 25)}%`,
-                      left: `${Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100)}%`
-                    }}
-                    transition={{ duration: 0.8 }}
-                    className="absolute h-full bg-gradient-to-r from-primary to-accent opacity-80 rounded overflow-hidden"
-                  >
-                    {/* Белые ноты поверх синего */}
-                    <div className="absolute h-full flex items-center justify-between px-4 text-xs text-white font-medium pointer-events-none"
-                         style={{
-                           width: `${100 / (Math.min(100, octaveRange * 25) / 100)}%`,
-                           left: `-${(Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100) / (Math.min(100, octaveRange * 25) / 100))}%`
-                         }}>
-                      <span>До2</span>
-                      <span>До3</span>
-                      <span>До4</span>
-                      <span>До5</span>
-                      <span>До6</span>
-                    </div>
-                  </motion.div>
-                )}
-              </div>
-              <div className="flex justify-between mt-2 text-sm">
-                <span className="text-slate-600">
-                  Нижняя нота: <strong className="text-primary">{minNote.fullRu}</strong> ({Math.round(stats.min)} Hz)
-                </span>
-                <span className="text-slate-600">
-                  Верхняя нота: <strong className="text-primary">{maxNote.fullRu}</strong> ({Math.round(stats.max)} Hz)
-                </span>
-              </div>
-            </motion.div>
-            )}
           </motion.div>
         ) : (
           <motion.div
@@ -1004,6 +947,59 @@ function LiveVoiceAnalyzer() {
                     </div>
                   ))}
                 </div>
+              </div>
+            </motion.div>
+
+            {/* Диапазон визуализация */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-2xl p-5 border border-slate-100 mb-6"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Activity className="w-4 h-4 text-primary" />
+                <h3 className="font-semibold text-slate-800">Твой вокальный диапазон</h3>
+              </div>
+              <div className="relative h-12 bg-slate-100 rounded-lg">
+                <div className="absolute inset-0 flex items-center justify-between px-4 text-xs text-slate-800 font-medium pointer-events-none">
+                  <span>До2</span>
+                  <span>До3</span>
+                  <span>До4</span>
+                  <span>До5</span>
+                  <span>До6</span>
+                </div>
+                {stats.validSamples > 10 && (
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
+                      width: `${Math.min(100, octaveRange * 25)}%`,
+                      left: `${Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100)}%`
+                    }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute h-full bg-gradient-to-r from-primary to-accent opacity-80 rounded overflow-hidden"
+                  >
+                    <div className="absolute h-full flex items-center justify-between px-4 text-xs text-white font-medium pointer-events-none"
+                         style={{
+                           width: `${100 / (Math.min(100, octaveRange * 25) / 100)}%`,
+                           left: `-${(Math.max(0, ((Math.log2(stats.min) - Math.log2(65)) / 4) * 100) / (Math.min(100, octaveRange * 25) / 100))}%`
+                         }}>
+                      <span>До2</span>
+                      <span>До3</span>
+                      <span>До4</span>
+                      <span>До5</span>
+                      <span>До6</span>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+              <div className="flex justify-between mt-2 text-sm">
+                <span className="text-slate-600">
+                  Нижняя нота: <strong className="text-primary">{minNote.fullRu}</strong> ({Math.round(stats.min)} Hz)
+                </span>
+                <span className="text-slate-600">
+                  Верхняя нота: <strong className="text-primary">{maxNote.fullRu}</strong> ({Math.round(stats.max)} Hz)
+                </span>
               </div>
             </motion.div>
 
