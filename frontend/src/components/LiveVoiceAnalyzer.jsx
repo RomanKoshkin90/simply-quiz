@@ -829,34 +829,6 @@ function LiveVoiceAnalyzer() {
               </div>
             </div>
 
-            {/* Спектрограмма */}
-            {isRecording && analyserRef.current && (
-              <div className="mb-4">
-                <Spectrogram analyser={analyserRef.current} isActive={isRecording} />
-              </div>
-            )}
-
-            {/* Статистика */}
-            {isRecording && (
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="bg-white rounded-xl p-3 border border-slate-100 text-center">
-                  <div className="text-slate-400 text-xs mb-1">Мин</div>
-                  <div className="font-semibold text-slate-700">
-                    {stats.min !== Infinity && stats.validSamples > 5 ? minNote.fullRu : '—'}
-                  </div>
-                </div>
-                <div className="bg-white rounded-xl p-3 border border-slate-100 text-center">
-                  <div className="text-slate-400 text-xs mb-1">Время</div>
-                  <div className="font-mono text-slate-700">{duration}с</div>
-                </div>
-                <div className="bg-white rounded-xl p-3 border border-slate-100 text-center">
-                  <div className="text-slate-400 text-xs mb-1">Макс</div>
-                  <div className="font-semibold text-slate-700">
-                    {stats.max > 0 && stats.validSamples > 5 ? maxNote.fullRu : '—'}
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Кнопка */}
             <div className="flex justify-center">
@@ -947,6 +919,36 @@ function LiveVoiceAnalyzer() {
                 </div>
               </div>
             </motion.div>
+
+
+            {/* Спектрограмма */}
+            {isRecording && analyserRef.current && (
+              <div className="mb-4">
+                <Spectrogram analyser={analyserRef.current} isActive={isRecording} />
+              </div>
+            )}
+
+            {/* Статистика */}
+            {isRecording && (
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="bg-white rounded-xl p-3 border border-slate-100 text-center">
+                  <div className="text-slate-400 text-xs mb-1">Мин</div>
+                  <div className="font-semibold text-slate-700">
+                    {stats.min !== Infinity && stats.validSamples > 5 ? minNote.fullRu : '—'}
+                  </div>
+                </div>
+                <div className="bg-white rounded-xl p-3 border border-slate-100 text-center">
+                  <div className="text-slate-400 text-xs mb-1">Время</div>
+                  <div className="font-mono text-slate-700">{duration}с</div>
+                </div>
+                <div className="bg-white rounded-xl p-3 border border-slate-100 text-center">
+                  <div className="text-slate-400 text-xs mb-1">Макс</div>
+                  <div className="font-semibold text-slate-700">
+                    {stats.max > 0 && stats.validSamples > 5 ? maxNote.fullRu : '—'}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Диапазон визуализация */}
             <motion.div
@@ -1141,10 +1143,10 @@ function LiveVoiceAnalyzer() {
                       <User className="w-8 h-8 text-primary" />
                     </div>
                     <h3 className="font-semibold text-slate-800 text-lg mb-2">
-                      Запишитесь на первую онлайн-консультацию со скидкой 55%
+                      Запишитесь на онлайн-консультацию со скидкой 55%
                     </h3>
                     <p className="text-sm text-slate-500">
-                      Анализ от ИИ помогает увидеть общую картину. Однако по-настоящему качественно и профессионально оценить ваш голос, а также дать точные рекомендации и персональные советы может только опытный преподаватель.
+                      Анализ от ИИ помогает увидеть общую картину. Но по-настоящему профессионально оценить ваш голос, дать точные рекомендации и персональные советы может только опытный преподаватель
                     </p>
                   </div>
 
@@ -1157,13 +1159,6 @@ function LiveVoiceAnalyzer() {
                   >
                     Записаться
                   </a>
-                  <button
-                    type="button"
-                    onClick={() => setFormSubmitted(false)}
-                    className="w-full mt-3 text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    Пропустить
-                  </button>
                 </div>
               </motion.div>
             )}

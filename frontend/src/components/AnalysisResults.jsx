@@ -252,10 +252,10 @@ function AnalysisResults({ data }) {
                           <User className="w-8 h-8 text-primary" />
                         </div>
                         <h3 className="font-semibold text-slate-800 text-lg mb-2">
-                          Запишитесь на первую онлайн-консультацию со скидкой 55%
+                          Запишитесь на онлайн-консультацию со скидкой 55%
                         </h3>
                         <p className="text-sm text-slate-500">
-                          Анализ от ИИ помогает увидеть общую картину. Однако по-настоящему качественно и профессионально оценить ваш голос, а также дать точные рекомендации и персональные советы может только опытный преподаватель.
+                          Анализ от ИИ помогает увидеть общую картину. Но по-настоящему профессионально оценить ваш голос, дать точные рекомендации и персональные советы может только опытный преподаватель
                         </p>
                       </div>
 
@@ -268,13 +268,6 @@ function AnalysisResults({ data }) {
                       >
                         Записаться
                       </a>
-                      <button
-                        type="button"
-                        onClick={() => setFormSubmitted(false)}
-                        className="w-full mt-3 text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                      >
-                        Пропустить
-                      </button>
                     </div>
                   )}
                 </motion.div>
