@@ -747,51 +747,6 @@ function LiveVoiceAnalyzer() {
                 </div>
               )}
             </div>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="results"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-3xl mx-auto"
-          >
-            {/* Hero - тип голоса */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-gradient-to-br from-primary to-accent rounded-2xl p-6 mb-6 text-white"
-            >
-              <div className="flex flex-col md:flex-row items-center gap-5">
-                <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Mic2 className="w-8 h-8" />
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-white/70 text-sm">Твой тип голоса</p>
-                  <h2 className="font-display font-bold text-3xl mb-1">{voiceType.name}</h2>
-                  <p className="text-white/80 text-sm">{voiceType.desc}</p>
-                  {stats.validSamples > 10 && (
-                    <p className="text-white/90 mt-1">
-                      <span className="font-semibold">{minNote.fullRu}</span>
-                      {' — '}
-                      <span className="font-semibold">{maxNote.fullRu}</span>
-                      <span className="text-white/60 ml-2">({octaveRange.toFixed(1)} октав)</span>
-                    </p>
-                  )}
-                </div>
-                <div className="md:ml-auto flex gap-4">
-                  {[
-                    { label: 'Мин', value: Math.round(stats.min), unit: 'Hz' },
-                    { label: 'Макс', value: Math.round(stats.max), unit: 'Hz' },
-                    { label: 'Время', value: duration, unit: 'с' },
-                  ].map(item => (
-                    <div key={item.label} className="px-4 py-2 rounded-lg bg-white/10 text-center">
-                      <div className="font-mono text-lg">{item.value}</div>
-                      <div className="text-white/60 text-xs">{item.label} {item.unit}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
 
             {/* Спидометр и шкала */}
             <div className="flex gap-4 items-center justify-center mb-4">
@@ -1002,6 +957,51 @@ function LiveVoiceAnalyzer() {
                 <span className="text-slate-600">
                   Верхняя нота: <strong className="text-primary">{maxNote.fullRu}</strong> ({Math.round(stats.max)} Hz)
                 </span>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="results"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl mx-auto"
+          >
+            {/* Hero - тип голоса */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-gradient-to-br from-primary to-accent rounded-2xl p-6 mb-6 text-white"
+            >
+              <div className="flex flex-col md:flex-row items-center gap-5">
+                <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center">
+                  <Mic2 className="w-8 h-8" />
+                </div>
+                <div className="text-center md:text-left">
+                  <p className="text-white/70 text-sm">Твой тип голоса</p>
+                  <h2 className="font-display font-bold text-3xl mb-1">{voiceType.name}</h2>
+                  <p className="text-white/80 text-sm">{voiceType.desc}</p>
+                  {stats.validSamples > 10 && (
+                    <p className="text-white/90 mt-1">
+                      <span className="font-semibold">{minNote.fullRu}</span>
+                      {' — '}
+                      <span className="font-semibold">{maxNote.fullRu}</span>
+                      <span className="text-white/60 ml-2">({octaveRange.toFixed(1)} октав)</span>
+                    </p>
+                  )}
+                </div>
+                <div className="md:ml-auto flex gap-4">
+                  {[
+                    { label: 'Мин', value: Math.round(stats.min), unit: 'Hz' },
+                    { label: 'Макс', value: Math.round(stats.max), unit: 'Hz' },
+                    { label: 'Время', value: duration, unit: 'с' },
+                  ].map(item => (
+                    <div key={item.label} className="px-4 py-2 rounded-lg bg-white/10 text-center">
+                      <div className="font-mono text-lg">{item.value}</div>
+                      <div className="text-white/60 text-xs">{item.label} {item.unit}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </motion.div>
 
