@@ -69,7 +69,7 @@ function Header({ onReset, showReset }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.2 }}
-          className="fixed top-4 right-4 z-50 px-4 py-2 bg-black text-white text-sm rounded-lg shadow-lg"
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm rounded-xl shadow-md"
         >
           Ссылка скопирована
         </motion.div>
