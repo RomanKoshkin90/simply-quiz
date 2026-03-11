@@ -1,10 +1,14 @@
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Mic2, RotateCcw, ExternalLink } from 'lucide-react'
 
 function Header({ onReset, showReset }) {
+  const [copied, setCopied] = useState(false)
+
   const handleShare = () => {
     navigator.clipboard.writeText('https://quiz.simplyonline.ru/')
-    alert('Ссылка скопирована!')
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
@@ -56,6 +60,20 @@ function Header({ onReset, showReset }) {
         </div>
       </div>
     </header>
+
+    <AnimatePresence>
+      {copied && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.2 }}
+          className="fixed top-4 right-4 z-50 px-4 py-2 bg-black text-white text-sm rounded-lg shadow-lg"
+        >
+          Ссылка скопирована
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }
 
