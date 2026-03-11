@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { motion } from 'framer-motion'
-import { Upload, Music, AlertCircle } from 'lucide-react'
+import { Paperclip, Music, AlertCircle } from 'lucide-react'
 
 function AudioUploader({ onUpload, error }) {
   const onDrop = useCallback((acceptedFiles) => {
@@ -59,7 +59,7 @@ function AudioUploader({ onUpload, error }) {
               w-16 h-16 rounded-2xl mb-5 flex items-center justify-center transition-colors
               ${isDragActive ? 'bg-primary' : 'bg-primary/10'}
             `}>
-              <Upload className={`w-7 h-7 ${isDragActive ? 'text-white' : 'text-primary'}`} />
+              <Paperclip className={`w-7 h-7 ${isDragActive ? 'text-white' : 'text-primary'}`} />
             </div>
             
             <h3 className="font-semibold text-lg text-slate-800 mb-1">
