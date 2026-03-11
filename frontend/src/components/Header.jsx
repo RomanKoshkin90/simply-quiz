@@ -12,6 +12,7 @@ function Header({ onReset, showReset }) {
   }
 
   return (
+    <>
     <header className="py-6 px-4 bg-white border-b border-slate-200">
       <div className="container mx-auto flex items-center justify-between">
         <motion.div
@@ -74,6 +75,7 @@ function Header({ onReset, showReset }) {
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   )
 }
 
