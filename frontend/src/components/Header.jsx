@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Mic2, RotateCcw, SquareArrowOutUpRight } from 'lucide-react'
+import { Mic2, RotateCcw, ExternalLink } from 'lucide-react'
 
 function Header({ onReset, showReset }) {
   const handleShare = () => {
@@ -34,7 +34,7 @@ function Header({ onReset, showReset }) {
             onClick={handleShare}
             className="flex items-center gap-2 px-4 py-2 transition-opacity hover:opacity-70"
           >
-            <SquareArrowOutUpRight className="w-4 h-4 text-black" />
+            <ExternalLink className="w-4 h-4 text-black" />
             <span className="text-black text-sm">
               Поделиться
             </span>
