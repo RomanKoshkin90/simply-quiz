@@ -8,7 +8,7 @@ import Header from './components/Header'
 import BackgroundEffects from './components/BackgroundEffects'
 import { YandexHit } from './utils/YandexHit'
 import { ymReachGoal } from './hooks/useYandexMetrika'
-import { Upload, Mic } from 'lucide-react'
+import { Paperclip, Mic } from 'lucide-react'
 
 const API_BASE = '/api/v1'
 
@@ -107,7 +107,7 @@ function App() {
                   : 'bg-white text-slate-600 border border-slate-200 hover:border-primary/30'
               }`}
             >
-              <Upload className="w-4 h-4" />
+              <Paperclip className="w-4 h-4" />
               Загрузить файл
             </button>
           </motion.div>
