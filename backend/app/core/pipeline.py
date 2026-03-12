@@ -132,17 +132,22 @@ class VoiceAnalysisPipeline:
         processed_duration = len(audio) / sr
         print(f"[PIPELINE] ✅ Предобработка: {time.time() - step_start:.1f}s (длина: {processed_duration:.1f}s)")
         
+        # Clip audio for analysis — 30s is more than enough for voice type detection
+        max_analysis_samples = settings.max_analysis_duration_seconds * sr
+        analysis_audio = audio[:max_analysis_samples] if len(audio) > max_analysis_samples else audio
+        print(f"[PIPELINE] 🎯 Анализ: {len(analysis_audio)/sr:.1f}s из {processed_duration:.1f}s")
+
         # Step 2: Extract pitch
-        print(f"[PIPELINE] 2️⃣ Извлечение pitch (CREPE) - это может занять время...")
+        print(f"[PIPELINE] 2️⃣ Извлечение pitch (CREPE)...")
         step_start = time.time()
-        pitch_result = self.pitch_extractor.extract_pitch(audio, sr)
+        pitch_result = self.pitch_extractor.extract_pitch(analysis_audio, sr)
         pitch_analysis = self.pitch_extractor.analyze_pitch(pitch_result)
         print(f"[PIPELINE] ✅ Pitch: {time.time() - step_start:.1f}s")
-        
+
         # Step 3: Extract timbre features
         print(f"[PIPELINE] 3️⃣ Извлечение тембра (OpenSMILE)...")
         step_start = time.time()
-        timbre_full = self.timbre_extractor.extract_features(audio, sr)
+        timbre_full = self.timbre_extractor.extract_features(analysis_audio, sr)
         timbre_summary = self.timbre_extractor.get_summary_features(timbre_full)
         print(f"[PIPELINE] ✅ Тембр: {time.time() - step_start:.1f}s")
         
@@ -150,7 +155,7 @@ class VoiceAnalysisPipeline:
         print(f"[PIPELINE] 4️⃣ Генерация embedding...")
         step_start = time.time()
         voice_embedding = self.embedding_generator.generate(
-            audio, sr, pitch_analysis
+            analysis_audio, sr, pitch_analysis
         )
         print(f"[PIPELINE] ✅ Embedding: {time.time() - step_start:.1f}s")
         

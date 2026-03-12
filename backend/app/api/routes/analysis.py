@@ -20,7 +20,7 @@ from app.schemas.analysis import (
     SimilarArtist,
     RecommendedSong,
 )
-from app.core.pipeline import VoiceAnalysisPipeline
+from app.core.pipeline import pipeline as voice_pipeline
 
 logger = logging.getLogger(__name__)
 
@@ -160,8 +160,7 @@ async def analyze_voice(
         
         # Run analysis pipeline
         print(f"[ANALYSIS] 🎤 Запускаю анализ голоса... ({time.time() - start_time:.1f}s)")
-        pipeline = VoiceAnalysisPipeline()
-        result = await pipeline.analyze(
+        result = await voice_pipeline.analyze(
             audio_path=audio_path,
             session_id=session_id,
             artists_data=artists_data,

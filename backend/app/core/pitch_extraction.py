@@ -96,7 +96,7 @@ class PitchExtractor:
             sr,
             model_capacity=self.model_capacity,
             step_size=self.step_size,
-            viterbi=viterbi,
+            viterbi=False,  # Viterbi adds overhead without benefit for voice type detection
             verbose=0,  # Suppress progress bar
         )
         

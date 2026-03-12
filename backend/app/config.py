@@ -19,7 +19,8 @@ class Settings(BaseSettings):
     
     # CREPE settings
     crepe_model_capacity: str = "tiny"  # tiny (fastest), small, medium, large, full
-    crepe_step_size: int = 20  # ms (20 = faster, 10 = more precise)
+    crepe_step_size: int = 50  # ms (20 = more precise, 50 = faster)
+    max_analysis_duration_seconds: int = 30  # seconds of audio used for pitch/timbre analysis
     
     # OpenSMILE settings
     opensmile_feature_set: str = "eGeMAPSv02"
